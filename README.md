@@ -52,6 +52,32 @@ XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
 
 For more info on how to configure OpenCode [**head over to our docs**](https://opencode.ai/docs).
 
+### OptiLLM Integration
+
+OptiLLM is now available as a built-in provider for richer reasoning workflows.
+
+```bash
+# Install and start the proxy
+pip install optillm
+OPENAI_API_KEY="sk-your-upstream-key" optillm
+```
+
+By default OpenCode connects to `http://127.0.0.1:8000/v1`. Override this or secure the proxy with:
+
+- `OPTILLM_BASE_URL` – custom OptiLLM endpoint
+- `OPTILLM_API_KEY` – shared secret required by the proxy
+- `OPTILLM_APPROACH` – force a specific approach such as `moa`, `plansearch`, or `mars`
+
+Pick any OptiLLM strategy model from the palette (for example `optillm/moa-gpt-4o-mini`). To make it the default, drop this in `opencode.jsonc`:
+
+```jsonc
+{
+  "model": "optillm/moa-gpt-4o-mini"
+}
+```
+
+OptiLLM inherits all upstream model capabilities and supports logprob-aware decoding strategies exposed via `extra_body`.
+
 ### Contributing
 
 OpenCode is an opinionated tool so any fundamental feature needs to go through a
