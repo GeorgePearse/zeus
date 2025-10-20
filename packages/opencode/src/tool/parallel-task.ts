@@ -1,18 +1,11 @@
 import { Tool } from "./tool"
 import DESCRIPTION from "./parallel-task.txt"
 import z from "zod/v4"
-import { Session } from "../session"
-import { Bus } from "../bus"
-import { MessageV2 } from "../session/message-v2"
-import { Identifier } from "../id/id"
-import { Agent } from "../agent/agent"
-import { SessionLock } from "../session/lock"
-import { SessionPrompt } from "../session/prompt"
-import { SessionPool } from "../coordinator/session-pool"
 import { AggregationActor } from "../coordinator/aggregation-actor"
 import { CoordinatorTypes } from "../coordinator/types"
 import { Log } from "../util/log"
 import { ulid } from "ulid"
+import { Agent } from "../agent/agent"
 
 /**
  * Parallel Task Tool
@@ -79,10 +72,9 @@ export const ParallelTaskTool = Tool.define("parallel_task", async () => {
         strategy: params.strategy,
       })
 
-      // Initialize session pool if needed
-      if (!SessionPool) {
-        await SessionPool.initialize()
-      }
+      // Initialize coordinator system if needed
+      const { initializeCoordinator } = await import("../coordinator")
+      await initializeCoordinator()
 
       // Validate strategy-specific parameters
       if (params.strategy === "first-k" && !params.k) {
@@ -107,19 +99,26 @@ export const ParallelTaskTool = Tool.define("parallel_task", async () => {
 
       const aggregationPromise = AggregationActor.startAggregation(aggregationConfig)
 
-      // Dispatch all tasks in parallel
-      const dispatchPromises = params.tasks.map((taskSpec) => {
-        return executeTask({
-          taskSpec,
-          correlationId,
+      // Enqueue all tasks to the task queue
+      const { TaskQueue } = await import("../coordinator/task-queue")
+      const { CoordinatorMetrics } = await import("../coordinator/metrics")
+
+      for (let i = 0; i < params.tasks.length; i++) {
+        const taskSpec = params.tasks[i]
+        const task: CoordinatorTypes.Task = {
+          taskId: ulid(),
           parentSessionID: ctx.sessionID,
           parentMessageID: ctx.messageID,
-          abort: ctx.abort,
-        })
-      })
+          correlationId,
+          subagent_type: taskSpec.subagent_type,
+          description: taskSpec.description,
+          prompt: taskSpec.prompt,
+          priority: 5, // Default priority
+        }
 
-      // Wait for all dispatches to complete (but not for execution)
-      await Promise.allSettled(dispatchPromises)
+        await TaskQueue.enqueue(task)
+        CoordinatorMetrics.recordTaskDispatched(task.priority)
+      }
 
       log.info("all tasks dispatched", {
         correlationId,
@@ -171,165 +170,6 @@ export const ParallelTaskTool = Tool.define("parallel_task", async () => {
     },
   }
 })
-
-/**
- * Execute a single task asynchronously
- */
-async function executeTask(input: {
-  taskSpec: { description: string; prompt: string; subagent_type: string }
-  correlationId: string
-  parentSessionID: string
-  parentMessageID: string
-  abort: AbortSignal
-}): Promise<void> {
-  const log = Log.create({ service: "parallel-task-executor" })
-  const taskId = ulid()
-  const startTime = Date.now()
-
-  try {
-    // Get agent
-    const agent = await Agent.get(input.taskSpec.subagent_type)
-    if (!agent) {
-      throw new Error(`Unknown agent type: ${input.taskSpec.subagent_type}`)
-    }
-
-    // Publish dispatched event
-    await Bus.publish(CoordinatorTypes.Event.TaskDispatched, {
-      taskId,
-      correlationId: input.correlationId,
-      parentSessionID: input.parentSessionID,
-      subagent_type: input.taskSpec.subagent_type,
-    })
-
-    // Acquire a session from the pool
-    const sessionID = await SessionPool.acquire(input.parentSessionID)
-
-    // Publish started event
-    await Bus.publish(CoordinatorTypes.Event.TaskStarted, {
-      taskId,
-      correlationId: input.correlationId,
-      sessionID,
-    })
-
-    // Get parent message for model info
-    const parentMsg = await Session.getMessage({
-      sessionID: input.parentSessionID,
-      messageID: input.parentMessageID,
-    })
-    if (parentMsg.info.role !== "assistant") {
-      throw new Error("Parent message is not an assistant message")
-    }
-
-    const model = agent.model ?? {
-      modelID: parentMsg.info.modelID,
-      providerID: parentMsg.info.providerID,
-    }
-
-    const messageID = Identifier.ascending("message")
-    const parts: Record<string, MessageV2.ToolPart> = {}
-
-    // Subscribe to tool parts for this task
-    const unsub = Bus.subscribe(MessageV2.Event.PartUpdated, async (evt) => {
-      if (evt.properties.part.sessionID !== sessionID) return
-      if (evt.properties.part.messageID === messageID) return
-      if (evt.properties.part.type !== "tool") return
-      parts[evt.properties.part.id] = evt.properties.part
-    })
-
-    // Set up abort handling
-    input.abort.addEventListener("abort", () => {
-      SessionLock.abort(sessionID)
-    })
-
-    // Execute the task
-    const result = await SessionPrompt.prompt({
-      messageID,
-      sessionID,
-      model: {
-        modelID: model.modelID,
-        providerID: model.providerID,
-      },
-      agent: agent.name,
-      tools: {
-        todowrite: false,
-        todoread: false,
-        task: false,
-        parallel_task: false, // Prevent nested parallel tasks
-        ...agent.tools,
-      },
-      parts: [
-        {
-          id: Identifier.ascending("part"),
-          type: "text",
-          text: input.taskSpec.prompt,
-        },
-      ],
-    })
-
-    unsub()
-
-    // Release session back to pool
-    SessionPool.release(sessionID, true)
-
-    const executionTime = Date.now() - startTime
-
-    // Collect tool parts
-    let all = await Session.messages(sessionID)
-    all = all.filter((x) => x.info.role === "assistant")
-    const toolParts = all.flatMap((msg) =>
-      msg.parts.filter((x: any) => x.type === "tool")
-    ) as MessageV2.ToolPart[]
-
-    // Create result
-    const taskResult: CoordinatorTypes.TaskResult = {
-      taskId,
-      correlationId: input.correlationId,
-      sessionID,
-      success: true,
-      output: (result.parts.findLast((x: any) => x.type === "text") as any)?.text ?? "",
-      toolParts,
-      executionTime,
-    }
-
-    // Publish completion event
-    await Bus.publish(CoordinatorTypes.Event.TaskCompleted, taskResult)
-
-    // Add to aggregation
-    AggregationActor.addResult(taskResult)
-
-    log.info("task completed successfully", {
-      taskId,
-      correlationId: input.correlationId,
-      executionTime,
-    })
-  } catch (error) {
-    log.error("task failed", {
-      taskId,
-      correlationId: input.correlationId,
-      error: String(error),
-    })
-
-    // Create failure result
-    const taskResult: CoordinatorTypes.TaskResult = {
-      taskId,
-      correlationId: input.correlationId,
-      sessionID: "",
-      success: false,
-      error: String(error),
-      executionTime: Date.now() - startTime,
-    }
-
-    // Publish failure event
-    await Bus.publish(CoordinatorTypes.Event.TaskFailed, {
-      taskId,
-      correlationId: input.correlationId,
-      error: String(error),
-    })
-
-    // Add to aggregation
-    AggregationActor.addResult(taskResult)
-  }
-}
 
 /**
  * Format aggregated results into human-readable output
