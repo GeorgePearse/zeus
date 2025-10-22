@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "opencode",
+  "name": "zeus",
   "private": true,
   "type": "module",
   "packageManager": "bun@1.3.0",
