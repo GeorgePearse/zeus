@@ -46,12 +46,12 @@ export const PatchTool = Tool.define("patch", {
       type: "add" | "update" | "delete" | "move"
       movePath?: string
     }> = []
-    
+
     let totalDiff = ""
 
     for (const hunk of hunks) {
       const filePath = path.resolve(Instance.directory, hunk.path)
-      
+
       if (!Filesystem.contains(Instance.directory, filePath)) {
         throw new Error(`File ${filePath} is not in the current working directory`)
       }
@@ -62,30 +62,30 @@ export const PatchTool = Tool.define("patch", {
             const oldContent = ""
             const newContent = hunk.contents
             const diff = createTwoFilesPatch(filePath, filePath, oldContent, newContent)
-            
+
             fileChanges.push({
               filePath,
               oldContent,
               newContent,
               type: "add",
             })
-            
+
             totalDiff += diff + "\n"
           }
           break
-          
+
         case "update":
           // Check if file exists for update
           const stats = await fs.stat(filePath).catch(() => null)
           if (!stats || stats.isDirectory()) {
             throw new Error(`File not found or is directory: ${filePath}`)
           }
-          
+
           // Read file and update time tracking (like edit tool does)
           await FileTime.assert(ctx.sessionID, filePath)
           const oldContent = await fs.readFile(filePath, "utf-8")
           let newContent = oldContent
-          
+
           // Apply the update chunks to get new content
           try {
             const fileUpdate = Patch.deriveNewContentsFromChunks(filePath, hunk.chunks)
@@ -93,9 +93,9 @@ export const PatchTool = Tool.define("patch", {
           } catch (error) {
             throw new Error(`Failed to apply update to ${filePath}: ${error}`)
           }
-          
+
           const diff = createTwoFilesPatch(filePath, filePath, oldContent, newContent)
-          
+
           fileChanges.push({
             filePath,
             oldContent,
@@ -103,23 +103,23 @@ export const PatchTool = Tool.define("patch", {
             type: hunk.move_path ? "move" : "update",
             movePath: hunk.move_path ? path.resolve(Instance.directory, hunk.move_path) : undefined,
           })
-          
+
           totalDiff += diff + "\n"
           break
-          
+
         case "delete":
           // Check if file exists for deletion
           await FileTime.assert(ctx.sessionID, filePath)
           const contentToDelete = await fs.readFile(filePath, "utf-8")
           const deleteDiff = createTwoFilesPatch(filePath, filePath, contentToDelete, "")
-          
+
           fileChanges.push({
             filePath,
             oldContent: contentToDelete,
             newContent: "",
             type: "delete",
           })
-          
+
           totalDiff += deleteDiff + "\n"
           break
       }
@@ -141,7 +141,7 @@ export const PatchTool = Tool.define("patch", {
 
     // Apply the changes
     const changedFiles: string[] = []
-    
+
     for (const change of fileChanges) {
       switch (change.type) {
         case "add":
@@ -153,12 +153,12 @@ export const PatchTool = Tool.define("patch", {
           await fs.writeFile(change.filePath, change.newContent, "utf-8")
           changedFiles.push(change.filePath)
           break
-          
+
         case "update":
           await fs.writeFile(change.filePath, change.newContent, "utf-8")
           changedFiles.push(change.filePath)
           break
-          
+
         case "move":
           if (change.movePath) {
             // Create parent directories for destination
@@ -173,13 +173,13 @@ export const PatchTool = Tool.define("patch", {
             changedFiles.push(change.movePath)
           }
           break
-          
+
         case "delete":
           await fs.unlink(change.filePath)
           changedFiles.push(change.filePath)
           break
       }
-      
+
       // Update file time tracking
       FileTime.read(ctx.sessionID, change.filePath)
       if (change.movePath) {

@@ -8,4 +8,3 @@
 Usage notes:
   - Domain filtering is supported to include or block specific websites
   - Web search is only available in the US
-

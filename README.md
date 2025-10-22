@@ -112,6 +112,30 @@ $ bun install
 $ bun dev
 ```
 
+#### Python Development Setup
+
+For Python tooling and scripts, we use `uv` for package management with `prek` and `zuban`:
+
+```bash
+# Create virtual environment
+uv venv --python 3.11
+
+# Install dependencies
+source .venv/bin/activate
+uv pip install prek zuban
+
+# Install prek hooks (faster Rust-based pre-commit)
+prek install
+
+# Run type checking with zuban (20-200x faster than mypy)
+zuban check
+```
+
+**Tools:**
+- **prek**: Fast, Rust-based alternative to pre-commit (drop-in replacement)
+- **zuban**: High-performance Python type checker (20-200x faster than mypy)
+- Configuration in `pyproject.toml` and `.pre-commit-config.yaml`
+
 #### Development Notes
 
 **API Client**: After making changes to the TypeScript API endpoints in `packages/opencode/src/server/server.ts`, you will need the OpenCode team to generate a new stainless sdk for the clients.
@@ -131,6 +155,14 @@ It's very similar to Claude Code in terms of capability. Here are the key differ
 #### What's the other repo?
 
 The other confusingly named repo has no relation to this one. You can [read the story behind it here](https://x.com/thdxr/status/1933561254481666466).
+
+### Future Integrations
+
+Projects and tools we're considering for future integration:
+
+- **[trae-agent](https://github.com/bytedance/trae-agent)** - ByteDance's agent framework
+- **[OptiLLM](https://github.com/codelion/optillm)** - Further integration beyond current proxy support
+- **[Genesis](https://github.com/GeorgePearse/Genesis)** - To be evaluated
 
 ---
 

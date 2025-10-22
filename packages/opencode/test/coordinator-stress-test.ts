@@ -10,6 +10,7 @@ import { SessionPool } from "../src/coordinator/session-pool"
 import { AggregationActor } from "../src/coordinator/aggregation-actor"
 import { CoordinatorTypes } from "../src/coordinator/types"
 import { Bus } from "../src/bus"
+import { Instance } from "../src/project/instance"
 import { ulid } from "ulid"
 
 // Test configuration
@@ -302,9 +303,12 @@ function printOverallSummary(results: TestResult[]) {
 }
 
 /**
- * Run the tests
+ * Run the tests with Instance context
  */
-runTests().catch((error) => {
+Instance.provide({
+  directory: process.cwd(),
+  fn: () => runTests(),
+}).catch((error) => {
   console.error("❌ Test failed:", error)
   process.exit(1)
 })

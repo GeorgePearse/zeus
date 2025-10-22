@@ -531,7 +531,7 @@ func (p *Parser) parseWin32InputKeyEvent(state *win32InputState, vkc uint16, _ u
 			text = string(keyCode)
 		}
 	}
-	
+
 	// Special case: numeric keypad divide should produce "/" text on all layouts (fix french keyboard layout)
 	if baseCode == KeyKpDivide {
 		text = "/"
