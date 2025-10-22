@@ -111,7 +111,7 @@ export function SelectDialog<T>(props: SelectDialogProps<T>) {
       <Dialog.Portal>
         <Dialog.Overlay class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]" />
         <Dialog.Content
-          class="fixed top-[20%] left-1/2 -translate-x-1/2 w-[90vw] max-w-2xl 
+          class="fixed top-[20%] left-1/2 -translate-x-1/2 w-[90vw] max-w-2xl
                  shadow-[0_0_33px_rgba(0,0,0,0.8)]
                  bg-background border border-border-subtle/30 rounded-lg  z-[101]
                  max-h-[60vh] flex flex-col"

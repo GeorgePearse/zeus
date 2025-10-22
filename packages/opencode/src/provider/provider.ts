@@ -13,6 +13,44 @@ import { Instance } from "../project/instance"
 import { Global } from "../global"
 import { Flag } from "../flag/flag"
 
+const OPTILLM_URL = "http://127.0.0.1:8000/v1"
+const OPTILLM_RELEASE = "2024-08-22"
+const createOptillmModel = (id: string, label: string): ModelsDev.Model => ({
+  id,
+  name: label,
+  release_date: OPTILLM_RELEASE,
+  attachment: false,
+  reasoning: true,
+  temperature: true,
+  tool_call: true,
+  cost: {
+    input: 0,
+    output: 0,
+    cache_read: 0,
+    cache_write: 0,
+  },
+  limit: {
+    context: 128000,
+    output: 8192,
+  },
+  modalities: {
+    input: ["text"],
+    output: ["text"],
+  },
+  options: {},
+})
+const OPTILLM_MODELS: Record<string, ModelsDev.Model> = {
+  "auto-gpt-4o-mini": createOptillmModel("auto-gpt-4o-mini", "OptiLLM Auto GPT-4o Mini"),
+  "moa-gpt-4o-mini": createOptillmModel("moa-gpt-4o-mini", "OptiLLM MOA GPT-4o Mini"),
+  "mcts-gpt-4o-mini": createOptillmModel("mcts-gpt-4o-mini", "OptiLLM MCTS GPT-4o Mini"),
+  "plansearch-gpt-4o-mini": createOptillmModel("plansearch-gpt-4o-mini", "OptiLLM PlanSearch GPT-4o Mini"),
+  "rstar-gpt-4o-mini": createOptillmModel("rstar-gpt-4o-mini", "OptiLLM R* GPT-4o Mini"),
+  "mars-gemini-2.5-flash-lite": createOptillmModel(
+    "mars-gemini-2.5-flash-lite",
+    "OptiLLM MARS Gemini 2.5 Flash Lite",
+  ),
+}
+
 export namespace Provider {
   const log = Log.create({ service: "provider" })
 
@@ -62,6 +100,33 @@ export namespace Provider {
           return sdk.responses(modelID)
         },
         options: {},
+      }
+    },
+    optillm: async (input) => {
+      if (!input) return { autoload: false }
+      const url = process.env["OPTILLM_BASE_URL"] ?? input.api ?? OPTILLM_URL
+      const key = process.env["OPTILLM_API_KEY"]
+      const approach = process.env["OPTILLM_APPROACH"]
+      const options: Record<string, unknown> = {
+        baseURL: url,
+      }
+      if (key) options["apiKey"] = key
+      if (approach) {
+        options["headers"] = {
+          "x-optillm-approach": approach,
+        }
+      }
+      const timeout = process.env["OPTILLM_TIMEOUT"]
+      if (timeout) {
+        const parsed = Number(timeout)
+        if (!Number.isNaN(parsed)) options["timeout"] = parsed
+      }
+      return {
+        autoload: true,
+        async getModel(sdk: any, modelID: string, _options?: Record<string, any>) {
+          return sdk.responses(modelID)
+        },
+        options,
       }
     },
     azure: async () => {
@@ -201,6 +266,26 @@ export namespace Provider {
   const state = Instance.state(async () => {
     const config = await Config.get()
     const database = await ModelsDev.get()
+    if (!database["optillm"]) {
+      database["optillm"] = {
+        id: "optillm",
+        name: "OptiLLM",
+        env: ["OPTILLM_API_KEY", "OPTILLM_BASE_URL"],
+        api: process.env["OPTILLM_BASE_URL"] ?? OPTILLM_URL,
+        npm: "@ai-sdk/openai-compatible",
+        models: { ...OPTILLM_MODELS },
+      }
+    }
+    const optillm = database["optillm"]
+    if (optillm) {
+      if (!optillm.api) optillm.api = process.env["OPTILLM_BASE_URL"] ?? OPTILLM_URL
+      if (!optillm.npm) optillm.npm = "@ai-sdk/openai-compatible"
+      optillm.env = optillm.env?.length ? optillm.env : ["OPTILLM_API_KEY", "OPTILLM_BASE_URL"]
+      optillm.models = {
+        ...OPTILLM_MODELS,
+        ...optillm.models,
+      }
+    }
 
     const providers: {
       [providerID: string]: {

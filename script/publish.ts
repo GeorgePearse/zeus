@@ -46,7 +46,7 @@ if (!Script.preview) {
 
           - Do NOT make general statements about "improvements", be very specific about what was changed.
           - Do NOT include any information about code changes if they do not affect the user facing changes.
-          
+
           IMPORTANT: ONLY return a bulleted list of changes, do not include any other information. Do not include a preamble like "Based on my analysis..."
 
           <example>

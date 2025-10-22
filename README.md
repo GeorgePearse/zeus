@@ -52,6 +52,32 @@ XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
 
 For more info on how to configure OpenCode [**head over to our docs**](https://opencode.ai/docs).
 
+### OptiLLM Integration
+
+OptiLLM is now available as a built-in provider for richer reasoning workflows.
+
+```bash
+# Install and start the proxy
+pip install optillm
+OPENAI_API_KEY="sk-your-upstream-key" optillm
+```
+
+By default OpenCode connects to `http://127.0.0.1:8000/v1`. Override this or secure the proxy with:
+
+- `OPTILLM_BASE_URL` – custom OptiLLM endpoint
+- `OPTILLM_API_KEY` – shared secret required by the proxy
+- `OPTILLM_APPROACH` – force a specific approach such as `moa`, `plansearch`, or `mars`
+
+Pick any OptiLLM strategy model from the palette (for example `optillm/moa-gpt-4o-mini`). To make it the default, drop this in `opencode.jsonc`:
+
+```jsonc
+{
+  "model": "optillm/moa-gpt-4o-mini"
+}
+```
+
+OptiLLM inherits all upstream model capabilities and supports logprob-aware decoding strategies exposed via `extra_body`.
+
 ### Contributing
 
 OpenCode is an opinionated tool so any fundamental feature needs to go through a
@@ -86,6 +112,30 @@ $ bun install
 $ bun dev
 ```
 
+#### Python Development Setup
+
+For Python tooling and scripts, we use `uv` for package management with `prek` and `zuban`:
+
+```bash
+# Create virtual environment
+uv venv --python 3.11
+
+# Install dependencies
+source .venv/bin/activate
+uv pip install prek zuban
+
+# Install prek hooks (faster Rust-based pre-commit)
+prek install
+
+# Run type checking with zuban (20-200x faster than mypy)
+zuban check
+```
+
+**Tools:**
+- **prek**: Fast, Rust-based alternative to pre-commit (drop-in replacement)
+- **zuban**: High-performance Python type checker (20-200x faster than mypy)
+- Configuration in `pyproject.toml` and `.pre-commit-config.yaml`
+
 #### Development Notes
 
 **API Client**: After making changes to the TypeScript API endpoints in `packages/opencode/src/server/server.ts`, you will need the OpenCode team to generate a new stainless sdk for the clients.
@@ -105,6 +155,14 @@ It's very similar to Claude Code in terms of capability. Here are the key differ
 #### What's the other repo?
 
 The other confusingly named repo has no relation to this one. You can [read the story behind it here](https://x.com/thdxr/status/1933561254481666466).
+
+### Future Integrations
+
+Projects and tools we're considering for future integration:
+
+- **[trae-agent](https://github.com/bytedance/trae-agent)** - ByteDance's agent framework
+- **[OptiLLM](https://github.com/codelion/optillm)** - Further integration beyond current proxy support
+- **[Genesis](https://github.com/GeorgePearse/Genesis)** - To be evaluated
 
 ---
 

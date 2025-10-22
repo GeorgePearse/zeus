@@ -335,7 +335,7 @@ export function Code(props: Props) {
           [&]:[counter-reset:line]
           [&_pre]:focus-visible:outline-none
           [&_pre]:overflow-x-auto [&_pre]:no-scrollbar
-          [&_code]:min-w-full [&_code]:inline-block 
+          [&_code]:min-w-full [&_code]:inline-block
           [&_.tab]:relative
           [&_.tab::before]:content['⇥']
           [&_.tab::before]:absolute

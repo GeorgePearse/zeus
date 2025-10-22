@@ -1,0 +1,67 @@
+Launch multiple sub-agents concurrently to work on parallel tasks. This tool enables massive parallelism by dispatching many tasks simultaneously without blocking the coordinator.
+
+**IMPORTANT**: This tool is for running MULTIPLE tasks in parallel. If you only have ONE task, use the regular `task` tool instead.
+
+## When to Use This Tool
+
+Use this tool when you need to:
+- Execute 10-100+ sub-tasks concurrently
+- Distribute work across multiple agents simultaneously
+- Aggregate results from many parallel operations
+- Avoid blocking while sub-agents work
+
+## Available Sub-Agents
+
+{agents}
+
+## How It Works
+
+1. You provide a list of tasks to execute in parallel
+2. The coordinator dispatches all tasks immediately (non-blocking)
+3. Multiple sub-agents work concurrently
+4. Results are aggregated based on your chosen strategy
+5. Coordinator remains responsive during execution
+
+## Aggregation Strategies
+
+- **all**: Wait for all tasks to complete (default)
+- **first-k**: Return first K results (fast, partial results)
+- **timebox**: Return results within time limit (best effort)
+- **quorum**: Wait for majority (fault tolerant)
+
+## Example Usage
+
+### Process 100 files in parallel:
+```
+parallel_task:
+  tasks:
+    - description: "Analyze file1.py"
+      prompt: "Analyze this Python file for security issues"
+      subagent_type: "general"
+    - description: "Analyze file2.py"
+      prompt: "Analyze this Python file for security issues"
+      subagent_type: "general"
+    [... 98 more tasks ...]
+  strategy: "all"
+```
+
+### Get first 10 search results quickly:
+```
+parallel_task:
+  tasks:
+    - description: "Search approach A"
+      prompt: "Search codebase using pattern A"
+      subagent_type: "general"
+    [... 19 more tasks with different approaches ...]
+  strategy: "first-k"
+  k: 10
+```
+
+### Time-boxed exploration:
+```
+parallel_task:
+  tasks:
+    [... many exploration tasks ...]
+  strategy: "timebox"
+  timeout_ms: 30000  # Return whatever completes in 30 seconds
+```

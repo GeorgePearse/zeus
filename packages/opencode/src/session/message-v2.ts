@@ -232,6 +232,7 @@ export namespace MessageV2 {
   const Base = z.object({
     id: z.string(),
     sessionID: z.string(),
+    correlationId: z.string().optional(),
   })
 
   export const User = Base.extend({
