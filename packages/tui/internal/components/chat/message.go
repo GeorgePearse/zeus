@@ -12,13 +12,13 @@ import (
 	"github.com/charmbracelet/lipgloss/v2/compat"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/muesli/reflow/truncate"
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode/internal/app"
-	"github.com/sst/opencode/internal/commands"
-	"github.com/sst/opencode/internal/components/diff"
-	"github.com/sst/opencode/internal/styles"
-	"github.com/sst/opencode/internal/theme"
-	"github.com/sst/opencode/internal/util"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus/internal/app"
+	"github.com/sst/zeus/internal/commands"
+	"github.com/sst/zeus/internal/components/diff"
+	"github.com/sst/zeus/internal/styles"
+	"github.com/sst/zeus/internal/theme"
+	"github.com/sst/zeus/internal/util"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -207,7 +207,7 @@ func renderContentBlock(
 
 func renderText(
 	app *app.App,
-	message opencode.MessageUnion,
+	message zeus.MessageUnion,
 	text string,
 	author string,
 	showToolDetails bool,
@@ -216,9 +216,9 @@ func renderText(
 	isThinking bool,
 	isQueued bool,
 	shimmer bool,
-	fileParts []opencode.FilePart,
-	agentParts []opencode.AgentPart,
-	toolCalls ...opencode.ToolPart,
+	fileParts []zeus.FilePart,
+	agentParts []zeus.AgentPart,
+	toolCalls ...zeus.ToolPart,
 ) string {
 	t := theme.CurrentTheme()
 
@@ -226,7 +226,7 @@ func renderText(
 	backgroundColor := t.BackgroundPanel()
 	var content string
 	switch casted := message.(type) {
-	case opencode.AssistantMessage:
+	case zeus.AssistantMessage:
 		backgroundColor = t.Background()
 		if isThinking {
 			backgroundColor = t.BackgroundPanel()
@@ -250,7 +250,7 @@ func renderText(
 			label = styles.NewStyle().Background(backgroundColor).Width(width - 6).Render(label)
 			content = label
 		}
-	case opencode.UserMessage:
+	case zeus.UserMessage:
 		ts = time.UnixMilli(int64(casted.Time.Created))
 		base := styles.NewStyle().Foreground(t.Text()).Background(backgroundColor)
 
@@ -366,7 +366,7 @@ func renderText(
 
 	// Check if this is an assistant message with agent information
 	var modelAndAgentSuffix string
-	if assistantMsg, ok := message.(opencode.AssistantMessage); ok && assistantMsg.Mode != "" {
+	if assistantMsg, ok := message.(zeus.AssistantMessage); ok && assistantMsg.Mode != "" {
 		// Find the agent index by name to get the correct color
 		var agentIndex int
 		for i, agent := range app.Agents {
@@ -402,7 +402,7 @@ func renderText(
 		for _, toolCall := range toolCalls {
 			title := renderToolTitle(toolCall, width-2)
 			style := styles.NewStyle()
-			if toolCall.State.Status == opencode.ToolPartStateStatusError {
+			if toolCall.State.Status == zeus.ToolPartStateStatusError {
 				style = style.Foreground(t.Error())
 			}
 			title = style.Render(title)
@@ -419,7 +419,7 @@ func renderText(
 	content = strings.Join(sections, "\n")
 
 	switch message.(type) {
-	case opencode.UserMessage:
+	case zeus.UserMessage:
 		borderColor := t.Secondary()
 		if isQueued {
 			borderColor = t.Accent()
@@ -431,7 +431,7 @@ func renderText(
 			WithTextColor(t.Text()),
 			WithBorderColor(borderColor),
 		)
-	case opencode.AssistantMessage:
+	case zeus.AssistantMessage:
 		if isThinking {
 			return renderContentBlock(
 				app,
@@ -455,8 +455,8 @@ func renderText(
 
 func renderToolDetails(
 	app *app.App,
-	toolCall opencode.ToolPart,
-	permission opencode.Permission,
+	toolCall zeus.ToolPart,
+	permission zeus.Permission,
 	width int,
 ) string {
 	measure := util.Measure("chat.renderToolDetails")
@@ -466,7 +466,7 @@ func renderToolDetails(
 		return ""
 	}
 
-	if toolCall.State.Status == opencode.ToolPartStateStatusPending {
+	if toolCall.State.Status == zeus.ToolPartStateStatusPending {
 		title := renderToolTitle(toolCall, width)
 		return renderContentBlock(app, title, width)
 	}
@@ -581,7 +581,7 @@ func renderToolDetails(
 					title = style.Render(title)
 					content := title + "\n" + body
 
-					if toolCall.State.Status == opencode.ToolPartStateStatusError {
+					if toolCall.State.Status == zeus.ToolPartStateStatusError {
 						errorStyle := styles.NewStyle().
 							Background(backgroundColor).
 							Foreground(t.Error()).
@@ -667,7 +667,7 @@ func renderToolDetails(
 				steps := []string{}
 				for _, item := range toolcalls {
 					data, _ := json.Marshal(item)
-					var toolCall opencode.ToolPart
+					var toolCall zeus.ToolPart
 					_ = json.Unmarshal(data, &toolCall)
 					step := renderToolTitle(toolCall, width-2)
 					step = "∟ " + step
@@ -706,7 +706,7 @@ func renderToolDetails(
 	}
 
 	error := ""
-	if toolCall.State.Status == opencode.ToolPartStateStatusError {
+	if toolCall.State.Status == zeus.ToolPartStateStatusError {
 		error = toolCall.State.Error
 	}
 
@@ -793,8 +793,8 @@ func getTodoPhase(metadata map[string]any) string {
 	}
 }
 
-func getTodoTitle(toolCall opencode.ToolPart) string {
-	if toolCall.State.Status == opencode.ToolPartStateStatusCompleted {
+func getTodoTitle(toolCall zeus.ToolPart) string {
+	if toolCall.State.Status == zeus.ToolPartStateStatusCompleted {
 		if metadata, ok := toolCall.State.Metadata.(map[string]any); ok {
 			return getTodoPhase(metadata)
 		}
@@ -803,10 +803,10 @@ func getTodoTitle(toolCall opencode.ToolPart) string {
 }
 
 func renderToolTitle(
-	toolCall opencode.ToolPart,
+	toolCall zeus.ToolPart,
 	width int,
 ) string {
-	if toolCall.State.Status == opencode.ToolPartStateStatusPending {
+	if toolCall.State.Status == zeus.ToolPartStateStatusPending {
 		title := renderToolAction(toolCall.Tool)
 		t := theme.CurrentTheme()
 		shiny := util.Shimmer(title, t.BackgroundPanel(), t.TextMuted(), t.Accent())

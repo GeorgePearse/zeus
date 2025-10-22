@@ -1,5 +1,5 @@
 import { createContext, useContext, type ParentProps } from "solid-js"
-import { createOpencodeClient } from "@opencode-ai/sdk/client"
+import { createOpencodeClient } from "@zeus-ai/sdk/client"
 
 const host = import.meta.env.VITE_OPENCODE_SERVER_HOST ?? "127.0.0.1"
 const port = import.meta.env.VITE_OPENCODE_SERVER_PORT ?? "4096"

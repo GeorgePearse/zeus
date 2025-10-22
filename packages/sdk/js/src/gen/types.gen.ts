@@ -323,7 +323,7 @@ export type Config = {
     scroll_speed?: number
   }
   /**
-   * Command configuration, see https://opencode.ai/docs/commands
+   * Command configuration, see https://zeus.ai/docs/commands
    */
   command?: {
     [key: string]: {
@@ -376,7 +376,7 @@ export type Config = {
     [key: string]: AgentConfig | undefined
   }
   /**
-   * Agent configuration, see https://opencode.ai/docs/agent
+   * Agent configuration, see https://zeus.ai/docs/agent
    */
   agent?: {
     plan?: AgentConfig

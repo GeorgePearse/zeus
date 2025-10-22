@@ -8,9 +8,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode-sdk-go/internal/testutil"
-	"github.com/sst/opencode-sdk-go/option"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus-sdk-go/internal/testutil"
+	"github.com/sst/zeus-sdk-go/option"
 )
 
 func TestPathGetWithOptionalParams(t *testing.T) {
@@ -22,14 +22,14 @@ func TestPathGetWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Path.Get(context.TODO(), opencode.PathGetParams{
-		Directory: opencode.F("directory"),
+	_, err := client.Path.Get(context.TODO(), zeus.PathGetParams{
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}

@@ -96,7 +96,7 @@ export namespace ProviderTransform {
       if (providerID !== "azure") {
         result["textVerbosity"] = modelID.includes("codex") ? "medium" : "low"
       }
-      if (providerID === "opencode") {
+      if (providerID === "zeus") {
         result["promptCacheKey"] = sessionID
         result["include"] = ["reasoning.encrypted_content"]
         result["reasoningSummary"] = "detailed"

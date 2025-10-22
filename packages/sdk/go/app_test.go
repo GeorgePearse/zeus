@@ -8,9 +8,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode-sdk-go/internal/testutil"
-	"github.com/sst/opencode-sdk-go/option"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus-sdk-go/internal/testutil"
+	"github.com/sst/zeus-sdk-go/option"
 )
 
 func TestAppLogWithOptionalParams(t *testing.T) {
@@ -22,20 +22,20 @@ func TestAppLogWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.App.Log(context.TODO(), opencode.AppLogParams{
-		Level:     opencode.F(opencode.AppLogParamsLevelDebug),
-		Message:   opencode.F("message"),
-		Service:   opencode.F("service"),
-		Directory: opencode.F("directory"),
-		Extra: opencode.F(map[string]interface{}{
+	_, err := client.App.Log(context.TODO(), zeus.AppLogParams{
+		Level:     zeus.F(zeus.AppLogParamsLevelDebug),
+		Message:   zeus.F("message"),
+		Service:   zeus.F("service"),
+		Directory: zeus.F("directory"),
+		Extra: zeus.F(map[string]interface{}{
 			"foo": "bar",
 		}),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -52,14 +52,14 @@ func TestAppProvidersWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.App.Providers(context.TODO(), opencode.AppProvidersParams{
-		Directory: opencode.F("directory"),
+	_, err := client.App.Providers(context.TODO(), zeus.AppProvidersParams{
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}

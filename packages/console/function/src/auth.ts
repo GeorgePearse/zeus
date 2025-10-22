@@ -7,14 +7,14 @@ import { THEME_OPENAUTH } from "@openauthjs/openauth/ui/theme"
 import { GithubProvider } from "@openauthjs/openauth/provider/github"
 import { GoogleOidcProvider } from "@openauthjs/openauth/provider/google"
 import { CloudflareStorage } from "@openauthjs/openauth/storage/cloudflare"
-import { Account } from "@opencode-ai/console-core/account.js"
-import { Workspace } from "@opencode-ai/console-core/workspace.js"
-import { Actor } from "@opencode-ai/console-core/actor.js"
-import { Resource } from "@opencode-ai/console-resource"
-import { User } from "@opencode-ai/console-core/user.js"
-import { and, Database, eq, isNull } from "@opencode-ai/console-core/drizzle/index.js"
-import { WorkspaceTable } from "@opencode-ai/console-core/schema/workspace.sql.js"
-import { UserTable } from "@opencode-ai/console-core/schema/user.sql.js"
+import { Account } from "@zeus-ai/console-core/account.js"
+import { Workspace } from "@zeus-ai/console-core/workspace.js"
+import { Actor } from "@zeus-ai/console-core/actor.js"
+import { Resource } from "@zeus-ai/console-resource"
+import { User } from "@zeus-ai/console-core/user.js"
+import { and, Database, eq, isNull } from "@zeus-ai/console-core/drizzle/index.js"
+import { WorkspaceTable } from "@zeus-ai/console-core/schema/workspace.sql.js"
+import { UserTable } from "@zeus-ai/console-core/schema/user.sql.js"
 
 type Env = {
   AuthStorage: KVNamespace
@@ -33,7 +33,7 @@ export const subjects = createSubjects({
 
 const MY_THEME: Theme = {
   ...THEME_OPENAUTH,
-  logo: "https://opencode.ai/favicon.svg",
+  logo: "https://zeus.ai/favicon.svg",
 }
 
 export default {
@@ -108,7 +108,7 @@ export default {
           const emails = (await fetch("https://api.github.com/user/emails", {
             headers: {
               Authorization: `Bearer ${response.tokenset.access}`,
-              "User-Agent": "opencode",
+              "User-Agent": "zeus",
               Accept: "application/vnd.github+json",
             },
           }).then((x) => x.json())) as any

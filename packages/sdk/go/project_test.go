@@ -8,9 +8,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode-sdk-go/internal/testutil"
-	"github.com/sst/opencode-sdk-go/option"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus-sdk-go/internal/testutil"
+	"github.com/sst/zeus-sdk-go/option"
 )
 
 func TestProjectListWithOptionalParams(t *testing.T) {
@@ -22,14 +22,14 @@ func TestProjectListWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Project.List(context.TODO(), opencode.ProjectListParams{
-		Directory: opencode.F("directory"),
+	_, err := client.Project.List(context.TODO(), zeus.ProjectListParams{
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -46,14 +46,14 @@ func TestProjectCurrentWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Project.Current(context.TODO(), opencode.ProjectCurrentParams{
-		Directory: opencode.F("directory"),
+	_, err := client.Project.Current(context.TODO(), zeus.ProjectCurrentParams{
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}

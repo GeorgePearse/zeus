@@ -1,14 +1,14 @@
-name: opencode
+name: zeus
 
 on:
   issue_comment:
     types: [created]
 
 jobs:
-  opencode:
+  zeus:
     if: |
       contains(github.event.comment.body, ' /oc') ||
-      contains(github.event.comment.body, ' /opencode')
+      contains(github.event.comment.body, ' /zeus')
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -19,9 +19,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run opencode
-        uses: sst/opencode/github@latest
+      - name: Run zeus
+        uses: sst/zeus/github@latest
         env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          ZEUS_API_KEY: ${{ secrets.ZEUS_API_KEY }}
         with:
-          model: opencode/sonic
+          model: zeus/sonic

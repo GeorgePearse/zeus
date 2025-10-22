@@ -11,13 +11,13 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea/v2"
 	flag "github.com/spf13/pflag"
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode-sdk-go/option"
-	"github.com/sst/opencode/internal/api"
-	"github.com/sst/opencode/internal/app"
-	"github.com/sst/opencode/internal/clipboard"
-	"github.com/sst/opencode/internal/tui"
-	"github.com/sst/opencode/internal/util"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus-sdk-go/option"
+	"github.com/sst/zeus/internal/api"
+	"github.com/sst/zeus/internal/app"
+	"github.com/sst/zeus/internal/clipboard"
+	"github.com/sst/zeus/internal/tui"
+	"github.com/sst/zeus/internal/util"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -35,7 +35,7 @@ func main() {
 	var sessionID *string = flag.String("session", "", "session ID")
 	flag.Parse()
 
-	url := os.Getenv("OPENCODE_SERVER")
+	url := os.Getenv("ZEUS_SERVER")
 
 	stat, err := os.Stdin.Stat()
 	if err != nil {
@@ -61,18 +61,18 @@ func main() {
 		}
 	}
 
-	httpClient := opencode.NewClient(
+	httpClient := zeus.NewClient(
 		option.WithBaseURL(url),
 	)
 
-	var agents []opencode.Agent
-	var path *opencode.Path
-	var project *opencode.Project
+	var agents []zeus.Agent
+	var path *zeus.Path
+	var project *zeus.Project
 
 	batch := errgroup.Group{}
 
 	batch.Go(func() error {
-		result, err := httpClient.Project.Current(context.Background(), opencode.ProjectCurrentParams{})
+		result, err := httpClient.Project.Current(context.Background(), zeus.ProjectCurrentParams{})
 		if err != nil {
 			return err
 		}
@@ -81,7 +81,7 @@ func main() {
 	})
 
 	batch.Go(func() error {
-		result, err := httpClient.Agent.List(context.Background(), opencode.AgentListParams{})
+		result, err := httpClient.Agent.List(context.Background(), zeus.AgentListParams{})
 		if err != nil {
 			return err
 		}
@@ -90,7 +90,7 @@ func main() {
 	})
 
 	batch.Go(func() error {
-		result, err := httpClient.Path.Get(context.Background(), opencode.PathGetParams{})
+		result, err := httpClient.Path.Get(context.Background(), zeus.PathGetParams{})
 		if err != nil {
 			return err
 		}
@@ -136,7 +136,7 @@ func main() {
 	signal.Notify(sigChan, syscall.SIGTERM, syscall.SIGINT)
 
 	go func() {
-		stream := httpClient.Event.ListStreaming(ctx, opencode.EventListParams{})
+		stream := httpClient.Event.ListStreaming(ctx, zeus.EventListParams{})
 		for stream.Next() {
 			evt := stream.Current().AsUnion()
 			program.Send(evt)

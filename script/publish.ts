@@ -1,32 +1,32 @@
 #!/usr/bin/env bun
 
 import { $ } from "bun"
-import { createOpencode } from "@opencode-ai/sdk"
-import { Script } from "@opencode-ai/script"
+import { createOpencode } from "@zeus-ai/sdk"
+import { Script } from "@zeus-ai/script"
 
 const notes = [] as string[]
 
 console.log("=== publishing ===\n")
 
 if (!Script.preview) {
-  const previous = await fetch("https://registry.npmjs.org/opencode-ai/latest")
+  const previous = await fetch("https://registry.npmjs.org/zeus-ai/latest")
     .then((res) => {
       if (!res.ok) throw new Error(res.statusText)
       return res.json()
     })
     .then((data: any) => data.version)
 
-  const opencode = await createOpencode()
-  const session = await opencode.client.session.create()
+  const zeus = await createOpencode()
+  const session = await zeus.client.session.create()
   console.log("generating changelog since " + previous)
-  const raw = await opencode.client.session
+  const raw = await zeus.client.session
     .prompt({
       path: {
         id: session.data!.id,
       },
       body: {
         model: {
-          providerID: "opencode",
+          providerID: "zeus",
           modelID: "kimi-k2",
         },
         parts: [
@@ -36,7 +36,7 @@ if (!Script.preview) {
           Analyze the commits between ${previous} and HEAD.
 
           We care about changes to
-          - packages/opencode
+          - packages/zeus
           - packages/sdk
           - packages/plugin
 
@@ -65,7 +65,7 @@ if (!Script.preview) {
     }
   }
   console.log(notes)
-  opencode.server.close()
+  zeus.server.close()
 }
 
 const pkgjsons = await Array.fromAsync(
@@ -82,8 +82,8 @@ for (const file of pkgjsons) {
 }
 await $`bun install`
 
-console.log("\n=== opencode ===\n")
-await import(`../packages/opencode/script/publish.ts`)
+console.log("\n=== zeus ===\n")
+await import(`../packages/zeus/script/publish.ts`)
 
 console.log("\n=== sdk ===\n")
 await import(`../packages/sdk/js/script/publish.ts`)
@@ -101,5 +101,5 @@ if (!Script.preview) {
   await $`git cherry-pick HEAD..origin/dev`.nothrow()
   await $`git push origin HEAD --tags --no-verify --force`
 
-  await $`gh release create v${Script.version} --title "v${Script.version}" --notes ${notes.join("\n") ?? "No notable changes"} ./packages/opencode/dist/*.zip`
+  await $`gh release create v${Script.version} --title "v${Script.version}" --notes ${notes.join("\n") ?? "No notable changes"} ./packages/zeus/dist/*.zip`
 }

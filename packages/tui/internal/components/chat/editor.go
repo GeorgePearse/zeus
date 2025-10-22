@@ -14,17 +14,17 @@ import (
 	tea "github.com/charmbracelet/bubbletea/v2"
 	"github.com/charmbracelet/lipgloss/v2"
 	"github.com/google/uuid"
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode/internal/app"
-	"github.com/sst/opencode/internal/attachment"
-	"github.com/sst/opencode/internal/clipboard"
-	"github.com/sst/opencode/internal/commands"
-	"github.com/sst/opencode/internal/components/dialog"
-	"github.com/sst/opencode/internal/components/textarea"
-	"github.com/sst/opencode/internal/components/toast"
-	"github.com/sst/opencode/internal/styles"
-	"github.com/sst/opencode/internal/theme"
-	"github.com/sst/opencode/internal/util"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus/internal/app"
+	"github.com/sst/zeus/internal/attachment"
+	"github.com/sst/zeus/internal/clipboard"
+	"github.com/sst/zeus/internal/commands"
+	"github.com/sst/zeus/internal/components/dialog"
+	"github.com/sst/zeus/internal/components/textarea"
+	"github.com/sst/zeus/internal/components/toast"
+	"github.com/sst/zeus/internal/styles"
+	"github.com/sst/zeus/internal/theme"
+	"github.com/sst/zeus/internal/util"
 )
 
 type EditorComponent interface {
@@ -134,7 +134,7 @@ func (m *editorComponent) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case app.MessageRevertedMsg:
 		if msg.Session.ID == m.app.Session.ID {
 			switch msg.Message.Info.(type) {
-			case opencode.UserMessage:
+			case zeus.UserMessage:
 				prompt, err := msg.Message.ToPrompt()
 				if err != nil {
 					return m, toast.NewErrorToast("Failed to revert message")
@@ -268,7 +268,7 @@ func (m *editorComponent) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cursorCol := m.textarea.CursorColumn()
 			m.textarea.ReplaceRange(atIndex, cursorCol, "")
 
-			symbol := msg.Item.RawData.(opencode.Symbol)
+			symbol := msg.Item.RawData.(zeus.Symbol)
 			parts := strings.Split(symbol.Name, ".")
 			lastPart := parts[len(parts)-1]
 			attachment := &attachment.Attachment{

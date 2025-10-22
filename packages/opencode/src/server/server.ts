@@ -132,9 +132,9 @@ export namespace Server {
         openAPIRouteHandler(app, {
           documentation: {
             info: {
-              title: "opencode",
+              title: "zeus",
               version: "0.0.3",
-              description: "opencode api",
+              description: "zeus api",
             },
             openapi: "3.1.1",
           },
@@ -1517,9 +1517,9 @@ export namespace Server {
     const result = await generateSpecs(App(), {
       documentation: {
         info: {
-          title: "opencode",
+          title: "zeus",
           version: "1.0.0",
-          description: "opencode api",
+          description: "zeus api",
         },
         openapi: "3.1.1",
       },

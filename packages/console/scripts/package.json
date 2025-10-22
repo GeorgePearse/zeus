@@ -1,5 +1,5 @@
 {
-  "name": "@opencode-ai/console-scripts",
+  "name": "@zeus-ai/console-scripts",
   "version": "0.15.3",
   "$schema": "https://json.schemastore.org/package.json",
   "private": true,
@@ -10,6 +10,6 @@
     "shell-prod": "sst shell --stage production -- bun"
   },
   "dependencies": {
-    "@opencode-ai/console-core": "workspace:*"
+    "@zeus-ai/console-core": "workspace:*"
   }
 }

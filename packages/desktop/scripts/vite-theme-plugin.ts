@@ -113,7 +113,7 @@ async function loadThemes(): Promise<Record<string, Record<string, ResolvedTheme
 function generateCSS(themes: Record<string, Record<string, ResolvedThemeColor>>): string {
   let css = `/* Auto-generated theme CSS - Do not edit manually */\n:root {\n`
 
-  const defaultTheme = themes["opencode"] || Object.values(themes)[0]
+  const defaultTheme = themes["zeus"] || Object.values(themes)[0]
   if (defaultTheme) {
     Object.entries(defaultTheme).forEach(([key, color]) => {
       const cssVar = `--theme-${kebabCase(key)}`

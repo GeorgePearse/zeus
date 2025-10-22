@@ -1,5 +1,5 @@
 {
-  "name": "@opencode-ai/function",
+  "name": "@zeus-ai/function",
   "version": "0.15.3",
   "$schema": "https://json.schemastore.org/package.json",
   "private": true,

@@ -8,9 +8,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode-sdk-go/internal/testutil"
-	"github.com/sst/opencode-sdk-go/option"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus-sdk-go/internal/testutil"
+	"github.com/sst/zeus-sdk-go/option"
 )
 
 func TestFindFilesWithOptionalParams(t *testing.T) {
@@ -22,15 +22,15 @@ func TestFindFilesWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Find.Files(context.TODO(), opencode.FindFilesParams{
-		Query:     opencode.F("query"),
-		Directory: opencode.F("directory"),
+	_, err := client.Find.Files(context.TODO(), zeus.FindFilesParams{
+		Query:     zeus.F("query"),
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -47,15 +47,15 @@ func TestFindSymbolsWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Find.Symbols(context.TODO(), opencode.FindSymbolsParams{
-		Query:     opencode.F("query"),
-		Directory: opencode.F("directory"),
+	_, err := client.Find.Symbols(context.TODO(), zeus.FindSymbolsParams{
+		Query:     zeus.F("query"),
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -72,15 +72,15 @@ func TestFindTextWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Find.Text(context.TODO(), opencode.FindTextParams{
-		Pattern:   opencode.F("pattern"),
-		Directory: opencode.F("directory"),
+	_, err := client.Find.Text(context.TODO(), zeus.FindTextParams{
+		Pattern:   zeus.F("pattern"),
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}

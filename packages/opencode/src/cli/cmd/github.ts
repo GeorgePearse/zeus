@@ -8,7 +8,7 @@ import { cmd } from "./cmd"
 import { ModelsDev } from "../../provider/models"
 import { Instance } from "../../project/instance"
 
-const WORKFLOW_FILE = ".github/workflows/opencode.yml"
+const WORKFLOW_FILE = ".github/workflows/zeus.yml"
 
 export const GithubCommand = cmd({
   command: "github",
@@ -59,7 +59,7 @@ export const GithubInstallCommand = cmd({
               "",
               "    3. Go to a GitHub issue and comment `/oc summarize` to see the agent in action",
               "",
-              "   Learn more about the GitHub agent - https://opencode.ai/docs/github/#usage-examples",
+              "   Learn more about the GitHub agent - https://zeus.ai/docs/github/#usage-examples",
             ].join("\n"),
           )
         }
@@ -78,12 +78,12 @@ export const GithubInstallCommand = cmd({
             .text()
             .then((text) => text.trim())
           // match https or git pattern
-          // ie. https://github.com/sst/opencode.git
-          // ie. https://github.com/sst/opencode
-          // ie. git@github.com:sst/opencode.git
-          // ie. git@github.com:sst/opencode
-          // ie. ssh://git@github.com/sst/opencode.git
-          // ie. ssh://git@github.com/sst/opencode
+          // ie. https://github.com/sst/zeus.git
+          // ie. https://github.com/sst/zeus
+          // ie. git@github.com:sst/zeus.git
+          // ie. git@github.com:sst/zeus
+          // ie. ssh://git@github.com/sst/zeus.git
+          // ie. ssh://git@github.com/sst/zeus
           const parsed = info.match(/^(?:(?:https?|ssh):\/\/)?(?:git@)?github\.com[:/]([^/]+)\/([^/.]+?)(?:\.git)?$/)
           if (!parsed) {
             prompts.log.error(`Could not find git repository. Please run this command from a git repository.`)
@@ -95,7 +95,7 @@ export const GithubInstallCommand = cmd({
 
         async function promptProvider() {
           const priority: Record<string, number> = {
-            opencode: 0,
+            zeus: 0,
             anthropic: 1,
             "github-copilot": 2,
             openai: 3,
@@ -156,7 +156,7 @@ export const GithubInstallCommand = cmd({
           if (installation) return s.stop("GitHub app already installed")
 
           // Open browser
-          const url = "https://github.com/apps/opencode-agent"
+          const url = "https://github.com/apps/zeus-agent"
           const command =
             process.platform === "darwin"
               ? `open "${url}"`
@@ -193,7 +193,7 @@ export const GithubInstallCommand = cmd({
 
           async function getInstallation() {
             return await fetch(
-              `https://api.opencode.ai/get_github_app_installation?owner=${app.owner}&repo=${app.repo}`,
+              `https://api.zeus.ai/get_github_app_installation?owner=${app.owner}&repo=${app.repo}`,
             )
               .then((res) => res.json())
               .then((data) => data.installation)
@@ -209,19 +209,19 @@ export const GithubInstallCommand = cmd({
           await Bun.write(
             path.join(app.root, WORKFLOW_FILE),
             `
-name: opencode
+name: zeus
 
 on:
   issue_comment:
     types: [created]
 
 jobs:
-  opencode:
+  zeus:
     if: |
       contains(github.event.comment.body, ' /oc') ||
       startsWith(github.event.comment.body, '/oc') ||
-      contains(github.event.comment.body, ' /opencode') ||
-      startsWith(github.event.comment.body, '/opencode')
+      contains(github.event.comment.body, ' /zeus') ||
+      startsWith(github.event.comment.body, '/zeus')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -230,8 +230,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run opencode
-        uses: sst/opencode/github@latest${envStr}
+      - name: Run zeus
+        uses: sst/zeus/github@latest${envStr}
         with:
           model: ${provider}/${model}
 `.trim(),

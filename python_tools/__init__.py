@@ -1,1 +1,1 @@
-"""Python tools and utilities for OpenCode development."""
+"""Python tools and utilities for Zeus development."""

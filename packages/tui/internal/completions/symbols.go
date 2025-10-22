@@ -6,10 +6,10 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode/internal/app"
-	"github.com/sst/opencode/internal/styles"
-	"github.com/sst/opencode/internal/theme"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus/internal/app"
+	"github.com/sst/zeus/internal/styles"
+	"github.com/sst/zeus/internal/theme"
 )
 
 type symbolsContextGroup struct {
@@ -67,7 +67,7 @@ func (cg *symbolsContextGroup) GetChildEntries(
 
 	symbols, err := cg.app.Client.Find.Symbols(
 		context.Background(),
-		opencode.FindSymbolsParams{Query: opencode.F(query)},
+		zeus.FindSymbolsParams{Query: zeus.F(query)},
 	)
 	if err != nil {
 		slog.Error("Failed to get symbol completion items", "error", err)

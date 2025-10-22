@@ -16,14 +16,14 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Install opencode
-        run: curl -fsSL https://opencode.ai/install | bash
+      - name: Install zeus
+        run: curl -fsSL https://zeus.ai/install | bash
 
       - name: Check for duplicate issues
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENCODE_PERMISSION: |
+          ZEUS_PERMISSION: |
             {
               "bash": {
                 "gh issue*": "allow",
@@ -32,7 +32,7 @@ jobs:
               "webfetch": "deny"
             }
         run: |
-          opencode run -m anthropic/claude-sonnet-4-20250514 "A new issue has been created:'
+          zeus run -m anthropic/claude-sonnet-4-20250514 "A new issue has been created:'
 
           Issue number:
           ${{ github.event.issue.number }}

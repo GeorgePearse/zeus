@@ -1,4 +1,4 @@
-import type { Message, Agent, Provider, Session, Part, Config, Path, File, FileNode } from "@opencode-ai/sdk"
+import type { Message, Agent, Provider, Session, Part, Config, Path, File, FileNode } from "@zeus-ai/sdk"
 import { createStore, produce, reconcile } from "solid-js/store"
 import { createContext, createMemo, Show, useContext, type ParentProps } from "solid-js"
 import { useSDK, useEvent } from "@/context"

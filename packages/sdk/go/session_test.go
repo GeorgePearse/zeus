@@ -8,9 +8,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode-sdk-go/internal/testutil"
-	"github.com/sst/opencode-sdk-go/option"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus-sdk-go/internal/testutil"
+	"github.com/sst/zeus-sdk-go/option"
 )
 
 func TestSessionNewWithOptionalParams(t *testing.T) {
@@ -22,16 +22,16 @@ func TestSessionNewWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Session.New(context.TODO(), opencode.SessionNewParams{
-		Directory: opencode.F("directory"),
-		ParentID:  opencode.F("sesJ!"),
-		Title:     opencode.F("title"),
+	_, err := client.Session.New(context.TODO(), zeus.SessionNewParams{
+		Directory: zeus.F("directory"),
+		ParentID:  zeus.F("sesJ!"),
+		Title:     zeus.F("title"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -48,19 +48,19 @@ func TestSessionUpdateWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Update(
 		context.TODO(),
 		"id",
-		opencode.SessionUpdateParams{
-			Directory: opencode.F("directory"),
-			Title:     opencode.F("title"),
+		zeus.SessionUpdateParams{
+			Directory: zeus.F("directory"),
+			Title:     zeus.F("title"),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -77,14 +77,14 @@ func TestSessionListWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Session.List(context.TODO(), opencode.SessionListParams{
-		Directory: opencode.F("directory"),
+	_, err := client.Session.List(context.TODO(), zeus.SessionListParams{
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -101,18 +101,18 @@ func TestSessionDeleteWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Delete(
 		context.TODO(),
 		"sesJ!",
-		opencode.SessionDeleteParams{
-			Directory: opencode.F("directory"),
+		zeus.SessionDeleteParams{
+			Directory: zeus.F("directory"),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -129,18 +129,18 @@ func TestSessionAbortWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Abort(
 		context.TODO(),
 		"id",
-		opencode.SessionAbortParams{
-			Directory: opencode.F("directory"),
+		zeus.SessionAbortParams{
+			Directory: zeus.F("directory"),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -157,18 +157,18 @@ func TestSessionChildrenWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Children(
 		context.TODO(),
 		"sesJ!",
-		opencode.SessionChildrenParams{
-			Directory: opencode.F("directory"),
+		zeus.SessionChildrenParams{
+			Directory: zeus.F("directory"),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -185,23 +185,23 @@ func TestSessionCommandWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Command(
 		context.TODO(),
 		"id",
-		opencode.SessionCommandParams{
-			Arguments: opencode.F("arguments"),
-			Command:   opencode.F("command"),
-			Directory: opencode.F("directory"),
-			Agent:     opencode.F("agent"),
-			MessageID: opencode.F("msgJ!"),
-			Model:     opencode.F("model"),
+		zeus.SessionCommandParams{
+			Arguments: zeus.F("arguments"),
+			Command:   zeus.F("command"),
+			Directory: zeus.F("directory"),
+			Agent:     zeus.F("agent"),
+			MessageID: zeus.F("msgJ!"),
+			Model:     zeus.F("model"),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -218,18 +218,18 @@ func TestSessionGetWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Get(
 		context.TODO(),
 		"sesJ!",
-		opencode.SessionGetParams{
-			Directory: opencode.F("directory"),
+		zeus.SessionGetParams{
+			Directory: zeus.F("directory"),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -246,21 +246,21 @@ func TestSessionInitWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Init(
 		context.TODO(),
 		"id",
-		opencode.SessionInitParams{
-			MessageID:  opencode.F("msgJ!"),
-			ModelID:    opencode.F("modelID"),
-			ProviderID: opencode.F("providerID"),
-			Directory:  opencode.F("directory"),
+		zeus.SessionInitParams{
+			MessageID:  zeus.F("msgJ!"),
+			ModelID:    zeus.F("modelID"),
+			ProviderID: zeus.F("providerID"),
+			Directory:  zeus.F("directory"),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -277,19 +277,19 @@ func TestSessionMessageWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Message(
 		context.TODO(),
 		"id",
 		"messageID",
-		opencode.SessionMessageParams{
-			Directory: opencode.F("directory"),
+		zeus.SessionMessageParams{
+			Directory: zeus.F("directory"),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -306,18 +306,18 @@ func TestSessionMessagesWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Messages(
 		context.TODO(),
 		"id",
-		opencode.SessionMessagesParams{
-			Directory: opencode.F("directory"),
+		zeus.SessionMessagesParams{
+			Directory: zeus.F("directory"),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -334,41 +334,41 @@ func TestSessionPromptWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Prompt(
 		context.TODO(),
 		"id",
-		opencode.SessionPromptParams{
-			Parts: opencode.F([]opencode.SessionPromptParamsPartUnion{opencode.TextPartInputParam{
-				Text: opencode.F("text"),
-				Type: opencode.F(opencode.TextPartInputTypeText),
-				ID:   opencode.F("id"),
-				Metadata: opencode.F(map[string]interface{}{
+		zeus.SessionPromptParams{
+			Parts: zeus.F([]zeus.SessionPromptParamsPartUnion{zeus.TextPartInputParam{
+				Text: zeus.F("text"),
+				Type: zeus.F(zeus.TextPartInputTypeText),
+				ID:   zeus.F("id"),
+				Metadata: zeus.F(map[string]interface{}{
 					"foo": "bar",
 				}),
-				Synthetic: opencode.F(true),
-				Time: opencode.F(opencode.TextPartInputTimeParam{
-					Start: opencode.F(0.000000),
-					End:   opencode.F(0.000000),
+				Synthetic: zeus.F(true),
+				Time: zeus.F(zeus.TextPartInputTimeParam{
+					Start: zeus.F(0.000000),
+					End:   zeus.F(0.000000),
 				}),
 			}}),
-			Directory: opencode.F("directory"),
-			Agent:     opencode.F("agent"),
-			MessageID: opencode.F("msgJ!"),
-			Model: opencode.F(opencode.SessionPromptParamsModel{
-				ModelID:    opencode.F("modelID"),
-				ProviderID: opencode.F("providerID"),
+			Directory: zeus.F("directory"),
+			Agent:     zeus.F("agent"),
+			MessageID: zeus.F("msgJ!"),
+			Model: zeus.F(zeus.SessionPromptParamsModel{
+				ModelID:    zeus.F("modelID"),
+				ProviderID: zeus.F("providerID"),
 			}),
-			System: opencode.F("system"),
-			Tools: opencode.F(map[string]bool{
+			System: zeus.F("system"),
+			Tools: zeus.F(map[string]bool{
 				"foo": true,
 			}),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -385,20 +385,20 @@ func TestSessionRevertWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Revert(
 		context.TODO(),
 		"id",
-		opencode.SessionRevertParams{
-			MessageID: opencode.F("msgJ!"),
-			Directory: opencode.F("directory"),
-			PartID:    opencode.F("prtJ!"),
+		zeus.SessionRevertParams{
+			MessageID: zeus.F("msgJ!"),
+			Directory: zeus.F("directory"),
+			PartID:    zeus.F("prtJ!"),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -415,18 +415,18 @@ func TestSessionShareWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Share(
 		context.TODO(),
 		"id",
-		opencode.SessionShareParams{
-			Directory: opencode.F("directory"),
+		zeus.SessionShareParams{
+			Directory: zeus.F("directory"),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -443,20 +443,20 @@ func TestSessionShellWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Shell(
 		context.TODO(),
 		"id",
-		opencode.SessionShellParams{
-			Agent:     opencode.F("agent"),
-			Command:   opencode.F("command"),
-			Directory: opencode.F("directory"),
+		zeus.SessionShellParams{
+			Agent:     zeus.F("agent"),
+			Command:   zeus.F("command"),
+			Directory: zeus.F("directory"),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -473,20 +473,20 @@ func TestSessionSummarizeWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Summarize(
 		context.TODO(),
 		"id",
-		opencode.SessionSummarizeParams{
-			ModelID:    opencode.F("modelID"),
-			ProviderID: opencode.F("providerID"),
-			Directory:  opencode.F("directory"),
+		zeus.SessionSummarizeParams{
+			ModelID:    zeus.F("modelID"),
+			ProviderID: zeus.F("providerID"),
+			Directory:  zeus.F("directory"),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -503,18 +503,18 @@ func TestSessionUnrevertWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Unrevert(
 		context.TODO(),
 		"id",
-		opencode.SessionUnrevertParams{
-			Directory: opencode.F("directory"),
+		zeus.SessionUnrevertParams{
+			Directory: zeus.F("directory"),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -531,18 +531,18 @@ func TestSessionUnshareWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
 	_, err := client.Session.Unshare(
 		context.TODO(),
 		"sesJ!",
-		opencode.SessionUnshareParams{
-			Directory: opencode.F("directory"),
+		zeus.SessionUnshareParams{
+			Directory: zeus.F("directory"),
 		},
 	)
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}

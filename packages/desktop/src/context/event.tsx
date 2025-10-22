@@ -1,6 +1,6 @@
 import { createContext, useContext, type ParentProps } from "solid-js"
 import { createEventBus } from "@solid-primitives/event-bus"
-import type { Event as SDKEvent } from "@opencode-ai/sdk"
+import type { Event as SDKEvent } from "@zeus-ai/sdk"
 import { useSDK } from "@/context"
 
 export type Event = SDKEvent // can extend with custom events later

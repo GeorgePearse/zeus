@@ -24,7 +24,7 @@ export namespace Config {
   export const state = Instance.state(async () => {
     const auth = await Auth.all()
     let result = await global()
-    for (const file of ["opencode.jsonc", "opencode.json"]) {
+    for (const file of ["zeus.jsonc", "zeus.json"]) {
       const found = await Filesystem.findUp(file, Instance.directory, Instance.worktree)
       for (const resolved of found.toReversed()) {
         result = mergeDeep(result, await loadFile(resolved))
@@ -32,20 +32,20 @@ export namespace Config {
     }
 
     // Override with custom config if provided
-    if (Flag.OPENCODE_CONFIG) {
-      result = mergeDeep(result, await loadFile(Flag.OPENCODE_CONFIG))
-      log.debug("loaded custom config", { path: Flag.OPENCODE_CONFIG })
+    if (Flag.ZEUS_CONFIG) {
+      result = mergeDeep(result, await loadFile(Flag.ZEUS_CONFIG))
+      log.debug("loaded custom config", { path: Flag.ZEUS_CONFIG })
     }
 
-    if (Flag.OPENCODE_CONFIG_CONTENT) {
-      result = mergeDeep(result, JSON.parse(Flag.OPENCODE_CONFIG_CONTENT))
-      log.debug("loaded custom config from OPENCODE_CONFIG_CONTENT")
+    if (Flag.ZEUS_CONFIG_CONTENT) {
+      result = mergeDeep(result, JSON.parse(Flag.ZEUS_CONFIG_CONTENT))
+      log.debug("loaded custom config from ZEUS_CONFIG_CONTENT")
     }
 
     for (const [key, value] of Object.entries(auth)) {
       if (value.type === "wellknown") {
         process.env[value.key] = value.token
-        const wellknown = await fetch(`${key}/.well-known/opencode`).then((x) => x.json())
+        const wellknown = await fetch(`${key}/.well-known/zeus`).then((x) => x.json())
         result = mergeDeep(result, await load(JSON.stringify(wellknown.config ?? {}), process.cwd()))
       }
     }
@@ -57,7 +57,7 @@ export namespace Config {
     const directories = [
       Global.Path.config,
       ...(await Array.fromAsync(
-        Filesystem.up({ targets: [".opencode"], start: Instance.directory, stop: Instance.worktree }),
+        Filesystem.up({ targets: [".zeus"], start: Instance.directory, stop: Instance.worktree }),
       )),
     ]
 
@@ -80,8 +80,8 @@ export namespace Config {
       })
     }
 
-    if (Flag.OPENCODE_PERMISSION) {
-      result.permission = mergeDeep(result.permission ?? {}, JSON.parse(Flag.OPENCODE_PERMISSION))
+    if (Flag.ZEUS_PERMISSION) {
+      result.permission = mergeDeep(result.permission ?? {}, JSON.parse(Flag.ZEUS_PERMISSION))
     }
 
     if (!result.username) result.username = os.userInfo().username
@@ -151,7 +151,7 @@ export namespace Config {
     if (!hasGitIgnore) await Bun.write(gitignore, ["node_modules", "package.json", "bun.lock", ".gitignore"].join("\n"))
 
     await BunProc.run(
-      ["add", "@opencode-ai/plugin@" + (Installation.isLocal() ? "latest" : Installation.VERSION), "--exact"],
+      ["add", "@zeus-ai/plugin@" + (Installation.isLocal() ? "latest" : Installation.VERSION), "--exact"],
       {
         cwd: dir,
       },
@@ -167,7 +167,7 @@ export namespace Config {
       if (!md.data) continue
 
       const name = (() => {
-        const patterns = ["/.opencode/command/", "/command/"]
+        const patterns = ["/.zeus/command/", "/command/"]
         const pattern = patterns.find((p) => item.includes(p))
 
         if (pattern) {
@@ -203,8 +203,8 @@ export namespace Config {
 
       // Extract relative path from agent folder for nested agents
       let agentName = path.basename(item, ".md")
-      const agentFolderPath = item.includes("/.opencode/agent/")
-        ? item.split("/.opencode/agent/")[1]
+      const agentFolderPath = item.includes("/.zeus/agent/")
+        ? item.split("/.zeus/agent/")[1]
         : item.includes("/agent/")
           ? item.split("/agent/")[1]
           : agentName + ".md"
@@ -424,7 +424,7 @@ export namespace Config {
       command: z
         .record(z.string(), Command)
         .optional()
-        .describe("Command configuration, see https://opencode.ai/docs/commands"),
+        .describe("Command configuration, see https://zeus.ai/docs/commands"),
       watcher: z
         .object({
           ignore: z.array(z.string()).optional(),
@@ -469,7 +469,7 @@ export namespace Config {
         })
         .catchall(Agent)
         .optional()
-        .describe("Agent configuration, see https://opencode.ai/docs/agent"),
+        .describe("Agent configuration, see https://zeus.ai/docs/agent"),
       provider: z
         .record(
           z.string(),
@@ -596,8 +596,8 @@ export namespace Config {
     let result: Info = pipe(
       {},
       mergeDeep(await loadFile(path.join(Global.Path.config, "config.json"))),
-      mergeDeep(await loadFile(path.join(Global.Path.config, "opencode.json"))),
-      mergeDeep(await loadFile(path.join(Global.Path.config, "opencode.jsonc"))),
+      mergeDeep(await loadFile(path.join(Global.Path.config, "zeus.json"))),
+      mergeDeep(await loadFile(path.join(Global.Path.config, "zeus.jsonc"))),
     )
 
     await import(path.join(Global.Path.config, "config"), {
@@ -608,7 +608,7 @@ export namespace Config {
       .then(async (mod) => {
         const { provider, model, ...rest } = mod.default
         if (provider && model) result.model = `${provider}/${model}`
-        result["$schema"] = "https://opencode.ai/config.json"
+        result["$schema"] = "https://zeus.ai/config.json"
         result = mergeDeep(result, rest)
         await Bun.write(path.join(Global.Path.config, "config.json"), JSON.stringify(result, null, 2))
         await fs.unlink(path.join(Global.Path.config, "config"))
@@ -696,7 +696,7 @@ export namespace Config {
     const parsed = Info.safeParse(data)
     if (parsed.success) {
       if (!parsed.data.$schema) {
-        parsed.data.$schema = "https://opencode.ai/config.json"
+        parsed.data.$schema = "https://zeus.ai/config.json"
         await Bun.write(configFilepath, JSON.stringify(parsed.data, null, 2))
       }
       const data = parsed.data

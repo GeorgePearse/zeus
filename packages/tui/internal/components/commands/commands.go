@@ -8,11 +8,11 @@ import (
 	tea "github.com/charmbracelet/bubbletea/v2"
 	"github.com/charmbracelet/lipgloss/v2"
 	"github.com/charmbracelet/lipgloss/v2/compat"
-	"github.com/sst/opencode/internal/app"
-	"github.com/sst/opencode/internal/commands"
-	"github.com/sst/opencode/internal/styles"
-	"github.com/sst/opencode/internal/theme"
-	"github.com/sst/opencode/internal/util"
+	"github.com/sst/zeus/internal/app"
+	"github.com/sst/zeus/internal/commands"
+	"github.com/sst/zeus/internal/styles"
+	"github.com/sst/zeus/internal/theme"
+	"github.com/sst/zeus/internal/util"
 )
 
 type CommandsComponent interface {
@@ -89,7 +89,7 @@ func (c *commandsComponent) View() string {
 			// },
 			commands.Command{
 				Name:        commands.CommandName(util.Ide()),
-				Description: "open opencode",
+				Description: "open zeus",
 				Keybindings: []commands.Keybinding{
 					{Key: ctrlKey + "+esc", RequiresLeader: false},
 				},

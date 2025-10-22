@@ -1,4 +1,4 @@
-# Agent Guidelines for @opencode/app
+# Agent Guidelines for @zeus/app
 
 ## Build/Test Commands
 

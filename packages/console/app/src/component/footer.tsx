@@ -16,7 +16,7 @@ export function Footer() {
   return (
     <footer data-component="footer">
       <div data-slot="cell">
-        <a href="https://github.com/sst/opencode" target="_blank">
+        <a href="https://github.com/sst/zeus" target="_blank">
           GitHub <span>[{starCount()}]</span>
         </a>
       </div>
@@ -27,7 +27,7 @@ export function Footer() {
         <a href="/discord">Discord</a>
       </div>
       <div data-slot="cell">
-        <a href="https://x.com/opencode">X</a>
+        <a href="https://x.com/zeus">X</a>
       </div>
     </footer>
   )

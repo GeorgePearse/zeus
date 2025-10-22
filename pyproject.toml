@@ -1,7 +1,7 @@
 [project]
-name = "opencode-tooling"
+name = "zeus-tooling"
 version = "0.1.0"
-description = "Python tooling and utilities for OpenCode development"
+description = "Python tooling and utilities for Zeus development"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}

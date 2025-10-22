@@ -1,7 +1,7 @@
 import { createStore, produce, reconcile } from "solid-js/store"
 import { batch, createContext, createEffect, createMemo, useContext, type ParentProps } from "solid-js"
 import { uniqueBy } from "remeda"
-import type { FileContent, FileNode, Model, Provider, File as FileStatus } from "@opencode-ai/sdk"
+import type { FileContent, FileNode, Model, Provider, File as FileStatus } from "@zeus-ai/sdk"
 import { useSDK, useEvent, useSync } from "@/context"
 
 export type LocalFile = FileNode &

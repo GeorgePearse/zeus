@@ -8,9 +8,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode-sdk-go/internal/testutil"
-	"github.com/sst/opencode-sdk-go/option"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus-sdk-go/internal/testutil"
+	"github.com/sst/zeus-sdk-go/option"
 )
 
 func TestTuiAppendPromptWithOptionalParams(t *testing.T) {
@@ -22,15 +22,15 @@ func TestTuiAppendPromptWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Tui.AppendPrompt(context.TODO(), opencode.TuiAppendPromptParams{
-		Text:      opencode.F("text"),
-		Directory: opencode.F("directory"),
+	_, err := client.Tui.AppendPrompt(context.TODO(), zeus.TuiAppendPromptParams{
+		Text:      zeus.F("text"),
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -47,14 +47,14 @@ func TestTuiClearPromptWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Tui.ClearPrompt(context.TODO(), opencode.TuiClearPromptParams{
-		Directory: opencode.F("directory"),
+	_, err := client.Tui.ClearPrompt(context.TODO(), zeus.TuiClearPromptParams{
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -71,15 +71,15 @@ func TestTuiExecuteCommandWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Tui.ExecuteCommand(context.TODO(), opencode.TuiExecuteCommandParams{
-		Command:   opencode.F("command"),
-		Directory: opencode.F("directory"),
+	_, err := client.Tui.ExecuteCommand(context.TODO(), zeus.TuiExecuteCommandParams{
+		Command:   zeus.F("command"),
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -96,14 +96,14 @@ func TestTuiOpenHelpWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Tui.OpenHelp(context.TODO(), opencode.TuiOpenHelpParams{
-		Directory: opencode.F("directory"),
+	_, err := client.Tui.OpenHelp(context.TODO(), zeus.TuiOpenHelpParams{
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -120,14 +120,14 @@ func TestTuiOpenModelsWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Tui.OpenModels(context.TODO(), opencode.TuiOpenModelsParams{
-		Directory: opencode.F("directory"),
+	_, err := client.Tui.OpenModels(context.TODO(), zeus.TuiOpenModelsParams{
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -144,14 +144,14 @@ func TestTuiOpenSessionsWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Tui.OpenSessions(context.TODO(), opencode.TuiOpenSessionsParams{
-		Directory: opencode.F("directory"),
+	_, err := client.Tui.OpenSessions(context.TODO(), zeus.TuiOpenSessionsParams{
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -168,14 +168,14 @@ func TestTuiOpenThemesWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Tui.OpenThemes(context.TODO(), opencode.TuiOpenThemesParams{
-		Directory: opencode.F("directory"),
+	_, err := client.Tui.OpenThemes(context.TODO(), zeus.TuiOpenThemesParams{
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -192,17 +192,17 @@ func TestTuiShowToastWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Tui.ShowToast(context.TODO(), opencode.TuiShowToastParams{
-		Message:   opencode.F("message"),
-		Variant:   opencode.F(opencode.TuiShowToastParamsVariantInfo),
-		Directory: opencode.F("directory"),
-		Title:     opencode.F("title"),
+	_, err := client.Tui.ShowToast(context.TODO(), zeus.TuiShowToastParams{
+		Message:   zeus.F("message"),
+		Variant:   zeus.F(zeus.TuiShowToastParamsVariantInfo),
+		Directory: zeus.F("directory"),
+		Title:     zeus.F("title"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}
@@ -219,14 +219,14 @@ func TestTuiSubmitPromptWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	_, err := client.Tui.SubmitPrompt(context.TODO(), opencode.TuiSubmitPromptParams{
-		Directory: opencode.F("directory"),
+	_, err := client.Tui.SubmitPrompt(context.TODO(), zeus.TuiSubmitPromptParams{
+		Directory: zeus.F("directory"),
 	})
 	if err != nil {
-		var apierr *opencode.Error
+		var apierr *zeus.Error
 		if errors.As(err, &apierr) {
 			t.Log(string(apierr.DumpRequest(true)))
 		}

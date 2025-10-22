@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-package opencode
+package zeus
 
 import (
 	"context"
@@ -8,15 +8,15 @@ import (
 	"net/url"
 	"slices"
 
-	"github.com/sst/opencode-sdk-go/internal/apijson"
-	"github.com/sst/opencode-sdk-go/internal/apiquery"
-	"github.com/sst/opencode-sdk-go/internal/param"
-	"github.com/sst/opencode-sdk-go/internal/requestconfig"
-	"github.com/sst/opencode-sdk-go/option"
+	"github.com/sst/zeus-sdk-go/internal/apijson"
+	"github.com/sst/zeus-sdk-go/internal/apiquery"
+	"github.com/sst/zeus-sdk-go/internal/param"
+	"github.com/sst/zeus-sdk-go/internal/requestconfig"
+	"github.com/sst/zeus-sdk-go/option"
 )
 
 // FindService contains methods and other services that help with interacting with
-// the opencode API.
+// the zeus API.
 //
 // Note, unlike clients, this service does not read variables from the environment
 // automatically. You should not instantiate this service directly, and instead use

@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea/v2"
-	"github.com/sst/opencode-sdk-go"
+	"github.com/sst/zeus-sdk-go"
 )
 
 type ExecuteCommandMsg Command
@@ -190,7 +190,7 @@ func parseBindings(bindings ...string) []Keybinding {
 	return parsedBindings
 }
 
-func LoadFromConfig(config *opencode.Config, customCommands []opencode.Command) CommandRegistry {
+func LoadFromConfig(config *zeus.Config, customCommands []zeus.Command) CommandRegistry {
 	defaults := []Command{
 		{
 			Name:        AppHelpCommand,
@@ -398,7 +398,7 @@ func LoadFromConfig(config *opencode.Config, customCommands []opencode.Command) 
 	json.Unmarshal(marshalled, &keybinds)
 	for _, command := range defaults {
 		// Remove share/unshare commands if sharing is disabled
-		if config.Share == opencode.ConfigShareDisabled &&
+		if config.Share == zeus.ConfigShareDisabled &&
 			(command.Name == SessionShareCommand || command.Name == SessionUnshareCommand) {
 			slog.Info("Removing share/unshare commands")
 			continue

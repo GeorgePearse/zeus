@@ -17,23 +17,23 @@ import { $ } from "bun"
 import { bootstrap } from "../bootstrap"
 
 declare global {
-  const OPENCODE_TUI_PATH: string
+  const ZEUS_TUI_PATH: string
 }
 
-if (typeof OPENCODE_TUI_PATH !== "undefined") {
-  await import(OPENCODE_TUI_PATH as string, {
+if (typeof ZEUS_TUI_PATH !== "undefined") {
+  await import(ZEUS_TUI_PATH as string, {
     with: { type: "file" },
   })
 }
 
 export const TuiCommand = cmd({
   command: "$0 [project]",
-  describe: "start opencode tui",
+  describe: "start zeus tui",
   builder: (yargs) =>
     yargs
       .positional("project", {
         type: "string",
-        describe: "path to start opencode in",
+        describe: "path to start zeus in",
       })
       .option("model", {
         type: "string",
@@ -125,7 +125,7 @@ export const TuiCommand = cmd({
           cmd = [binary]
         }
         if (!tui) {
-          const dir = Bun.fileURLToPath(new URL("../../../../tui/cmd/opencode", import.meta.url))
+          const dir = Bun.fileURLToPath(new URL("../../../../tui/cmd/zeus", import.meta.url))
           let binaryName = `./dist/tui${process.platform === "win32" ? ".exe" : ""}`
           await $`go build -o ${binaryName} ./main.go`.cwd(dir)
           cmd = [path.join(dir, binaryName)]
@@ -148,7 +148,7 @@ export const TuiCommand = cmd({
           env: {
             ...process.env,
             CGO_ENABLED: "0",
-            OPENCODE_SERVER: server.url.toString(),
+            ZEUS_SERVER: server.url.toString(),
           },
           onExit: () => {
             server.stop()
@@ -158,7 +158,7 @@ export const TuiCommand = cmd({
         ;(async () => {
           // if (Installation.isLocal()) return
           const config = await Config.global()
-          if (config.autoupdate === false || Flag.OPENCODE_DISABLE_AUTOUPDATE) return
+          if (config.autoupdate === false || Flag.ZEUS_DISABLE_AUTOUPDATE) return
           const latest = await Installation.latest().catch(() => {})
           if (!latest) return
           if (Installation.VERSION === latest) return
@@ -201,14 +201,14 @@ export const TuiCommand = cmd({
 })
 
 /**
- * Get the correct command to run opencode CLI
- * In development: ["bun", "run", "packages/opencode/src/index.ts"]
- * In production: ["/path/to/opencode"]
+ * Get the correct command to run zeus CLI
+ * In development: ["bun", "run", "packages/zeus/src/index.ts"]
+ * In production: ["/path/to/zeus"]
  */
 function getOpencodeCommand(): string[] {
-  // Check if OPENCODE_BIN_PATH is set (used by shell wrapper scripts)
-  if (process.env["OPENCODE_BIN_PATH"]) {
-    return [process.env["OPENCODE_BIN_PATH"]]
+  // Check if ZEUS_BIN_PATH is set (used by shell wrapper scripts)
+  if (process.env["ZEUS_BIN_PATH"]) {
+    return [process.env["ZEUS_BIN_PATH"]]
   }
 
   const execPath = process.execPath.toLowerCase()

@@ -1,10 +1,10 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-package opencode
+package zeus
 
 import (
-	"github.com/sst/opencode-sdk-go/internal/apierror"
-	"github.com/sst/opencode-sdk-go/shared"
+	"github.com/sst/zeus-sdk-go/internal/apierror"
+	"github.com/sst/zeus-sdk-go/shared"
 )
 
 type Error = apierror.Error
