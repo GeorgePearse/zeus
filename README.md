@@ -160,9 +160,55 @@ The other confusingly named repo has no relation to this one. You can [read the 
 
 Projects and tools we're considering for future integration:
 
-- **[trae-agent](https://github.com/bytedance/trae-agent)** - ByteDance's agent framework
-- **[OptiLLM](https://github.com/codelion/optillm)** - Further integration beyond current proxy support
-- **[Genesis](https://github.com/GeorgePearse/Genesis)** - To be evaluated
+#### **[trae-agent](https://github.com/bytedance/trae-agent)** - Research-First Agent Framework
+ByteDance's intelligent software engineering assistant designed specifically for AI agent research and experimentation.
+
+**Key Features:**
+- **Rich Tool Ecosystem**: Comprehensive file manipulation, shell execution, and structured reasoning capabilities
+- **Trajectory Logging**: Detailed execution logs for auditing and analyzing agent decision-making processes
+- **Multi-Provider Support**: Works with OpenAI, Anthropic, Google Gemini, Ollama, and other LLM providers
+- **Lakeview Summarization**: Distills agent reasoning steps into concise explanations, improving interpretability
+- **Research-Centric Design**: Built as a platform for studying agent architectures and conducting ablation studies
+
+**Potential Integration**: Could enhance ⚡ Zeus's research capabilities and provide deeper insights into agent reasoning patterns, especially valuable for understanding how different LLMs approach coding tasks.
+
+#### **[OptiLLM](https://github.com/codelion/optillm)** - Advanced Reasoning Strategies
+Currently integrated as an external proxy, but deeper integration possibilities exist.
+
+**Current Integration:**
+- External proxy server supporting mixture of agents (MoA), planning search, MARS, and other strategies
+- Configured via environment variables (OPTILLM_BASE_URL, OPTILLM_API_KEY, OPTILLM_APPROACH)
+- Available as built-in provider with models like `optillm/moa-gpt-4o-mini`
+
+**Future Integration Possibilities:**
+- **Native Strategy Support**: Embed OptiLLM reasoning strategies directly into ⚡ Zeus without external proxy
+- **Automatic Strategy Selection**: Intelligently choose reasoning approach based on task complexity
+- **Hybrid Workflows**: Combine multiple strategies for different stages of coding tasks
+- **Performance Optimization**: Reduce latency by eliminating proxy overhead
+- **Custom Strategy Development**: Build ⚡ Zeus-specific reasoning patterns optimized for terminal-based workflows
+
+**Benefits**: Would enable more sophisticated problem-solving approaches, particularly for complex refactoring, architectural decisions, and multi-file changes.
+
+#### **[Genesis](https://github.com/GeorgePearse/Genesis)** - LLM-Driven Code Evolution
+An experimental framework combining Large Language Models with evolutionary algorithms for automated code optimization.
+
+**Core Capabilities:**
+- **Evolutionary Programming**: Maintains populations of code that evolve over generations
+- **LLM-Powered Mutations**: Uses ensemble of LLMs as intelligent mutation operators
+- **Parallel Evaluation**: Scales across local machines, Slurm clusters, or cloud sandboxes
+- **Knowledge Transfer**: Archive-based learning between evolutionary islands
+- **Interactive Monitoring**: Real-time WebUI with genealogy trees and performance metrics
+- **Flexible Deployment**: Supports local execution, Docker, and Conda environments
+
+**Use Cases:**
+- Automated performance optimization of generated code
+- Exploration of alternative implementation strategies
+- Scientific code discovery with verifiable metrics
+- Systematic improvement of recurring code patterns
+
+**Potential Integration**: Could enable ⚡ Zeus to automatically optimize code it generates, explore multiple solution approaches in parallel, and learn from evolutionary feedback to improve future code generation. Particularly valuable for performance-critical code and algorithmic problems where multiple valid approaches exist.
+
+**Evaluation Status**: Experimental - assessing how evolutionary approaches could complement traditional LLM code generation workflows.
 
 ---
 
