@@ -50,6 +50,8 @@ import { spawn } from "child_process"
 import { Command } from "../command"
 import { $, fileURLToPath } from "bun"
 import { ConfigMarkdown } from "../config/markdown"
+import { executeStrategyChain } from "../strategy/chain"
+import type { StrategyContext, StrategyName } from "../strategy/types"
 
 export namespace SessionPrompt {
   const log = Log.create({ service: "session.prompt" })
@@ -95,6 +97,14 @@ export namespace SessionPrompt {
     agent: z.string().optional(),
     system: z.string().optional(),
     tools: z.record(z.string(), z.boolean()).optional(),
+    strategyConfig: z
+      .object({
+        strategies: z.array(z.string()),
+        parallel: z.boolean().optional(),
+        stopOnError: z.boolean().optional(),
+        maxExecutionTimeMs: z.number().optional(),
+      })
+      .optional(),
     parts: z.array(
       z.discriminatedUnion("type", [
         MessageV2.TextPart.omit({
@@ -205,8 +215,9 @@ export namespace SessionPrompt {
     )
 
     let step = 0
+    let activeSystem = system // Track potentially modified system prompt
     while (true) {
-      const msgs: MessageV2.WithParts[] = pipe(
+      let msgs: MessageV2.WithParts[] = pipe(
         await getMessages({
           sessionID: input.sessionID,
           model: model.info,
@@ -214,6 +225,100 @@ export namespace SessionPrompt {
         }),
         (messages) => insertReminders({ messages, agent }),
       )
+
+      // Execute strategy chain on first step if configured
+      if (step === 0 && input.strategyConfig?.strategies?.length) {
+        try {
+          const strategyContext: StrategyContext = {
+            messages: MessageV2.toModelMessage(msgs),
+            systemPrompt: activeSystem.join("\n"),
+            model: model.language,
+            temperature: params.temperature,
+            topP: params.topP,
+            maxTokens: ProviderTransform.maxOutputTokens(
+              model.providerID,
+              params.options,
+              model.info.limit.output,
+              OUTPUT_TOKEN_MAX,
+            ),
+            sessionId: input.sessionID,
+          }
+
+          const strategyResult = await executeStrategyChain(strategyContext, {
+            strategies: input.strategyConfig.strategies as StrategyName[],
+            parallel: input.strategyConfig.parallel,
+            stopOnError: input.strategyConfig.stopOnError,
+            maxExecutionTimeMs: input.strategyConfig.maxExecutionTimeMs,
+          })
+
+          log.info("strategy executed", {
+            strategies: strategyResult.results.map((r) => r.strategyUsed),
+            success: strategyResult.success,
+          })
+
+          // If strategy modified system prompt, update it
+          if (strategyResult.finalContext.systemPrompt !== strategyContext.systemPrompt) {
+            activeSystem = [strategyResult.finalContext.systemPrompt ?? ""]
+          }
+
+          // Strategy result includes modified messages - we need to convert back
+          // For now, we'll use the last assistant message if the strategy added one
+          if (strategyResult.finalContext.messages.length > strategyContext.messages.length) {
+            const newMessage = strategyResult.finalContext.messages[strategyResult.finalContext.messages.length - 1]
+            if (newMessage.role === "assistant") {
+              // Create a synthetic assistant message with the strategy output
+              const assistantMsg: MessageV2.Info = {
+                id: Identifier.ascending("message"),
+                role: "assistant",
+                system: activeSystem,
+                mode: agent.name,
+                path: {
+                  cwd: Instance.directory,
+                  root: Instance.worktree,
+                },
+                cost: 0,
+                tokens: {
+                  input: 0,
+                  output: 0,
+                  reasoning: 0,
+                  cache: { read: 0, write: 0 },
+                },
+                modelID: model.info.id,
+                providerID: model.providerID,
+                time: {
+                  created: Date.now(),
+                  completed: Date.now(),
+                },
+                sessionID: input.sessionID,
+              }
+              await Session.updateMessage(assistantMsg)
+
+              const textContent =
+                typeof newMessage.content === "string" ? newMessage.content : newMessage.content.map((c: any) => c.text || "").join("")
+
+              const textPart: MessageV2.Part = {
+                id: Identifier.ascending("part"),
+                messageID: assistantMsg.id,
+                sessionID: input.sessionID,
+                type: "text",
+                text: textContent,
+                time: {
+                  start: Date.now(),
+                  end: Date.now(),
+                },
+              }
+              await Session.updatePart(textPart)
+
+              // Return early with the strategy result
+              return { info: assistantMsg, parts: [textPart] }
+            }
+          }
+        } catch (error) {
+          log.error("strategy execution failed", { error })
+          // Continue with normal flow if strategy fails
+        }
+      }
+
       if (step === 0)
         ensureTitle({
           session,
@@ -277,7 +382,7 @@ export namespace SessionPrompt {
         temperature: params.temperature,
         topP: params.topP,
         messages: [
-          ...system.map(
+          ...activeSystem.map(
             (x): ModelMessage => ({
               role: "system",
               content: x,

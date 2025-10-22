@@ -12,6 +12,7 @@ import { Identifier } from "../../id/id"
 import { Agent } from "../../agent/agent"
 import { Command } from "../../command"
 import { SessionPrompt } from "../../session/prompt"
+import { extractStrategyConfig, hasStrategyFlags } from "../../strategy/cli"
 
 const TOOL: Record<string, [string, string]> = {
   todowrite: ["Todo", UI.Style.TEXT_WARNING_BOLD],
@@ -70,8 +71,128 @@ export const RunCommand = cmd({
         default: "default",
         describe: "format: default (formatted) or json (raw JSON events)",
       })
+      .option("list-strategies", {
+        type: "boolean",
+        describe: "list all available strategies and exit",
+      })
+      // Strategy flags - OptiLLM integration
+      .option("strategy-chain", {
+        type: "string",
+        describe: "chain of strategies to apply (comma-separated)",
+      })
+      .option("mars", {
+        type: "boolean",
+        describe: "use MARS (Multi-agent reasoning)",
+      })
+      .option("cepo", {
+        type: "boolean",
+        describe: "use CePO (Combined Enhanced Prompt Optimization)",
+      })
+      .option("cot-reflection", {
+        type: "boolean",
+        describe: "use Chain of Thought with Reflection",
+      })
+      .option("plansearch", {
+        type: "boolean",
+        describe: "use PlanSearch algorithm",
+      })
+      .option("re2", {
+        type: "boolean",
+        describe: "use RE2 (ReRead - process queries twice)",
+      })
+      .option("self-consistency", {
+        type: "boolean",
+        describe: "use Self-Consistency (multiple reasoning paths)",
+      })
+      .option("z3", {
+        type: "boolean",
+        describe: "use Z3 theorem proving",
+      })
+      .option("rstar", {
+        type: "boolean",
+        describe: "use R* algorithm",
+      })
+      .option("leap", {
+        type: "boolean",
+        describe: "use LEAP (learn from few-shot examples)",
+      })
+      .option("rto", {
+        type: "boolean",
+        describe: "use Round Trip Optimization",
+      })
+      .option("bon", {
+        type: "boolean",
+        describe: "use Best of N sampling",
+      })
+      .option("moa", {
+        type: "boolean",
+        describe: "use Mixture of Agents",
+      })
+      .option("mcts", {
+        type: "boolean",
+        describe: "use Monte Carlo Tree Search",
+      })
+      .option("pvg", {
+        type: "boolean",
+        describe: "use Prover-Verifier Game",
+      })
+      .option("deep-confidence", {
+        type: "boolean",
+        describe: "use Deep Confidence guided reasoning",
+      })
+      .option("cot-decoding", {
+        type: "boolean",
+        describe: "use CoT Decoding (without explicit prompting)",
+      })
+      .option("entropy-decoding", {
+        type: "boolean",
+        describe: "use Entropy Decoding (adaptive sampling)",
+      })
+      .option("think-deeper", {
+        type: "boolean",
+        describe: "use ThinkDeeper (reasoning effort)",
+      })
+      .option("auto-think", {
+        type: "boolean",
+        describe: "use AutoThink (auto complexity classification)",
+      })
+      // Strategy aliases
+      .option("reasoning", {
+        type: "boolean",
+        describe: "alias for --cot-reflection",
+      })
+      .option("ultrathink", {
+        type: "boolean",
+        describe: "alias for --think-deeper",
+      })
   },
   handler: async (args) => {
+    // Handle --list-strategies flag early (before message validation)
+    if (args.listStrategies) {
+      await bootstrap(process.cwd(), async () => {
+        const { strategyRegistry } = await import("../../strategy/strategy")
+        const strategies = strategyRegistry.getAll()
+
+        UI.println(UI.Style.TEXT_INFO_BOLD + "Available Strategies:\n")
+
+        for (const [name, strategy] of Object.entries(strategies)) {
+          const meta = strategy.metadata
+          const aliasText = meta.aliases.length > 0 ? ` (aliases: ${meta.aliases.join(", ")})` : ""
+          const costText = meta.estimatedCostMultiplier > 1 ? ` [${meta.estimatedCostMultiplier}x cost]` : ""
+          const streamText = !meta.supportsStreaming ? " [no streaming]" : ""
+
+          UI.println(UI.Style.TEXT_SUCCESS_BOLD + `  --${name}${aliasText}`)
+          UI.println(UI.Style.TEXT_DIM + `    ${meta.description}`)
+          UI.println(
+            UI.Style.TEXT_DIM +
+              `    Category: ${meta.category}${costText}${streamText}${meta.requiresMultipleCalls ? " [multiple calls]" : ""}`,
+          )
+          UI.println()
+        }
+      })
+      process.exit(0)
+    }
+
     let message = args.message.join(" ")
 
     if (!process.stdin.isTTY) message += "\n" + (await Bun.stdin.text())
@@ -82,6 +203,7 @@ export const RunCommand = cmd({
     }
 
     await bootstrap(process.cwd(), async () => {
+
       if (args.command) {
         const exists = await Command.get(args.command)
         if (!exists) {
@@ -235,6 +357,10 @@ export const RunCommand = cmd({
             arguments: message,
           })
         }
+
+        // Extract strategy configuration from CLI args
+        const strategyConfig = hasStrategyFlags(args) ? extractStrategyConfig(args) ?? undefined : undefined
+
         return await SessionPrompt.prompt({
           sessionID: session.id,
           messageID,
@@ -243,6 +369,7 @@ export const RunCommand = cmd({
             modelID,
           },
           agent: agent.name,
+          strategyConfig,
           parts: [
             {
               id: Identifier.ascending("part"),
