@@ -16,7 +16,7 @@ function init(highlighter: ReturnType<typeof useShiki>) {
         }
         return highlighter.codeToHtml(code, {
           lang: lang || "text",
-          theme: "opencode",
+          theme: "zeus",
           tabindex: false,
         })
       },

@@ -17,7 +17,7 @@ export const ServeCommand = cmd({
         describe: "hostname to listen on",
         default: "127.0.0.1",
       }),
-  describe: "starts a headless opencode server",
+  describe: "starts a headless zeus server",
   handler: async (args) => {
     const hostname = args.hostname
     const port = args.port
@@ -25,7 +25,7 @@ export const ServeCommand = cmd({
       port,
       hostname,
     })
-    console.log(`opencode server listening on http://${server.hostname}:${server.port}`)
+    console.log(`zeus server listening on http://${server.hostname}:${server.port}`)
     await new Promise(() => {})
     server.stop()
   },

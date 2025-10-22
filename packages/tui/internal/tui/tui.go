@@ -15,21 +15,21 @@ import (
 	tea "github.com/charmbracelet/bubbletea/v2"
 	"github.com/charmbracelet/lipgloss/v2"
 
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode/internal/api"
-	"github.com/sst/opencode/internal/app"
-	"github.com/sst/opencode/internal/commands"
-	"github.com/sst/opencode/internal/completions"
-	"github.com/sst/opencode/internal/components/chat"
-	cmdcomp "github.com/sst/opencode/internal/components/commands"
-	"github.com/sst/opencode/internal/components/dialog"
-	"github.com/sst/opencode/internal/components/modal"
-	"github.com/sst/opencode/internal/components/status"
-	"github.com/sst/opencode/internal/components/toast"
-	"github.com/sst/opencode/internal/layout"
-	"github.com/sst/opencode/internal/styles"
-	"github.com/sst/opencode/internal/theme"
-	"github.com/sst/opencode/internal/util"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus/internal/api"
+	"github.com/sst/zeus/internal/app"
+	"github.com/sst/zeus/internal/commands"
+	"github.com/sst/zeus/internal/completions"
+	"github.com/sst/zeus/internal/components/chat"
+	cmdcomp "github.com/sst/zeus/internal/components/commands"
+	"github.com/sst/zeus/internal/components/dialog"
+	"github.com/sst/zeus/internal/components/modal"
+	"github.com/sst/zeus/internal/components/status"
+	"github.com/sst/zeus/internal/components/toast"
+	"github.com/sst/zeus/internal/layout"
+	"github.com/sst/zeus/internal/styles"
+	"github.com/sst/zeus/internal/theme"
+	"github.com/sst/zeus/internal/util"
 )
 
 // InterruptDebounceTimeoutMsg is sent when the interrupt key debounce timeout expires
@@ -82,7 +82,7 @@ type Model struct {
 func (a Model) Init() tea.Cmd {
 	var cmds []tea.Cmd
 	// https://github.com/charmbracelet/bubbletea/issues/1440
-	// https://github.com/sst/opencode/issues/127
+	// https://github.com/sst/zeus/issues/127
 	if !util.IsWsl() {
 		cmds = append(cmds, tea.RequestBackgroundColor)
 	}
@@ -113,16 +113,16 @@ func (a Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if len(a.app.Permissions) > 0 {
 					a.app.CurrentPermission = a.app.Permissions[0]
 				} else {
-					a.app.CurrentPermission = opencode.Permission{}
+					a.app.CurrentPermission = zeus.Permission{}
 				}
-				response := opencode.SessionPermissionRespondParamsResponseOnce
+				response := zeus.SessionPermissionRespondParamsResponseOnce
 				switch keyString {
 				case "enter":
-					response = opencode.SessionPermissionRespondParamsResponseOnce
+					response = zeus.SessionPermissionRespondParamsResponseOnce
 				case "a":
-					response = opencode.SessionPermissionRespondParamsResponseAlways
+					response = zeus.SessionPermissionRespondParamsResponseAlways
 				case "esc":
-					response = opencode.SessionPermissionRespondParamsResponseReject
+					response = zeus.SessionPermissionRespondParamsResponseReject
 				}
 
 				return a, func() tea.Msg {
@@ -130,7 +130,7 @@ func (a Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						context.Background(),
 						sessionID,
 						permissionID,
-						opencode.SessionPermissionRespondParams{Response: opencode.F(response)},
+						zeus.SessionPermissionRespondParams{Response: zeus.F(response)},
 					)
 					if err != nil {
 						slog.Error("Failed to respond to permission request", "error", err)
@@ -393,7 +393,7 @@ func (a Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		a.showCompletionDialog = false
 		// If we're in a child session, switch back to parent before sending prompt
 		if a.app.Session.ParentID != "" {
-			parentSession, err := a.app.Client.Session.Get(context.Background(), a.app.Session.ParentID, opencode.SessionGetParams{})
+			parentSession, err := a.app.Client.Session.Get(context.Background(), a.app.Session.ParentID, zeus.SessionGetParams{})
 			if err != nil {
 				slog.Error("Failed to get parent session", "error", err)
 				return a, toast.NewErrorToast("Failed to get parent session")
@@ -411,7 +411,7 @@ func (a Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case app.SendCommand:
 		// If we're in a child session, switch back to parent before sending prompt
 		if a.app.Session.ParentID != "" {
-			parentSession, err := a.app.Client.Session.Get(context.Background(), a.app.Session.ParentID, opencode.SessionGetParams{})
+			parentSession, err := a.app.Client.Session.Get(context.Background(), a.app.Session.ParentID, zeus.SessionGetParams{})
 			if err != nil {
 				slog.Error("Failed to get parent session", "error", err)
 				return a, toast.NewErrorToast("Failed to get parent session")
@@ -429,7 +429,7 @@ func (a Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case app.SendShell:
 		// If we're in a child session, switch back to parent before sending prompt
 		if a.app.Session.ParentID != "" {
-			parentSession, err := a.app.Client.Session.Get(context.Background(), a.app.Session.ParentID, opencode.SessionGetParams{})
+			parentSession, err := a.app.Client.Session.Get(context.Background(), a.app.Session.ParentID, zeus.SessionGetParams{})
 			if err != nil {
 				slog.Error("Failed to get parent session", "error", err)
 				return a, toast.NewErrorToast("Failed to get parent session")
@@ -451,59 +451,59 @@ func (a Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		a.editor = updated.(chat.EditorComponent)
 		cmds = append(cmds, cmd)
 	case app.SessionClearedMsg:
-		a.app.Session = &opencode.Session{}
+		a.app.Session = &zeus.Session{}
 		a.app.Messages = []app.Message{}
 	case dialog.CompletionDialogCloseMsg:
 		a.showCompletionDialog = false
-	case opencode.EventListResponseEventInstallationUpdated:
+	case zeus.EventListResponseEventInstallationUpdated:
 		return a, toast.NewSuccessToast(
-			"opencode updated to "+msg.Properties.Version+", restart to apply.",
+			"zeus updated to "+msg.Properties.Version+", restart to apply.",
 			toast.WithTitle("New version installed"),
 		)
 		/*
-			case opencode.EventListResponseEventIdeInstalled:
+			case zeus.EventListResponseEventIdeInstalled:
 				return a, toast.NewSuccessToast(
-					"Installed the opencode extension in "+msg.Properties.Ide,
+					"Installed the zeus extension in "+msg.Properties.Ide,
 					toast.WithTitle(msg.Properties.Ide+" extension installed"),
 				)
 		*/
-	case opencode.EventListResponseEventSessionDeleted:
+	case zeus.EventListResponseEventSessionDeleted:
 		if a.app.Session != nil && msg.Properties.Info.ID == a.app.Session.ID {
-			a.app.Session = &opencode.Session{}
+			a.app.Session = &zeus.Session{}
 			a.app.Messages = []app.Message{}
 		}
 		return a, toast.NewSuccessToast("Session deleted successfully")
-	case opencode.EventListResponseEventSessionUpdated:
+	case zeus.EventListResponseEventSessionUpdated:
 		if msg.Properties.Info.ID == a.app.Session.ID {
 			a.app.Session = &msg.Properties.Info
 		}
-	case opencode.EventListResponseEventMessagePartUpdated:
+	case zeus.EventListResponseEventMessagePartUpdated:
 		slog.Debug("message part updated", "message", msg.Properties.Part.MessageID, "part", msg.Properties.Part.ID)
 		if msg.Properties.Part.SessionID == a.app.Session.ID {
 			messageIndex := slices.IndexFunc(a.app.Messages, func(m app.Message) bool {
 				switch casted := m.Info.(type) {
-				case opencode.UserMessage:
+				case zeus.UserMessage:
 					return casted.ID == msg.Properties.Part.MessageID
-				case opencode.AssistantMessage:
+				case zeus.AssistantMessage:
 					return casted.ID == msg.Properties.Part.MessageID
 				}
 				return false
 			})
 			if messageIndex > -1 {
 				message := a.app.Messages[messageIndex]
-				partIndex := slices.IndexFunc(message.Parts, func(p opencode.PartUnion) bool {
+				partIndex := slices.IndexFunc(message.Parts, func(p zeus.PartUnion) bool {
 					switch casted := p.(type) {
-					case opencode.TextPart:
+					case zeus.TextPart:
 						return casted.ID == msg.Properties.Part.ID
-					case opencode.ReasoningPart:
+					case zeus.ReasoningPart:
 						return casted.ID == msg.Properties.Part.ID
-					case opencode.FilePart:
+					case zeus.FilePart:
 						return casted.ID == msg.Properties.Part.ID
-					case opencode.ToolPart:
+					case zeus.ToolPart:
 						return casted.ID == msg.Properties.Part.ID
-					case opencode.StepStartPart:
+					case zeus.StepStartPart:
 						return casted.ID == msg.Properties.Part.ID
-					case opencode.StepFinishPart:
+					case zeus.StepFinishPart:
 						return casted.ID == msg.Properties.Part.ID
 					}
 					return false
@@ -517,33 +517,33 @@ func (a Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				a.app.Messages[messageIndex] = message
 			}
 		}
-	case opencode.EventListResponseEventMessagePartRemoved:
+	case zeus.EventListResponseEventMessagePartRemoved:
 		slog.Debug("message part removed", "session", msg.Properties.SessionID, "message", msg.Properties.MessageID, "part", msg.Properties.PartID)
 		if msg.Properties.SessionID == a.app.Session.ID {
 			messageIndex := slices.IndexFunc(a.app.Messages, func(m app.Message) bool {
 				switch casted := m.Info.(type) {
-				case opencode.UserMessage:
+				case zeus.UserMessage:
 					return casted.ID == msg.Properties.MessageID
-				case opencode.AssistantMessage:
+				case zeus.AssistantMessage:
 					return casted.ID == msg.Properties.MessageID
 				}
 				return false
 			})
 			if messageIndex > -1 {
 				message := a.app.Messages[messageIndex]
-				partIndex := slices.IndexFunc(message.Parts, func(p opencode.PartUnion) bool {
+				partIndex := slices.IndexFunc(message.Parts, func(p zeus.PartUnion) bool {
 					switch casted := p.(type) {
-					case opencode.TextPart:
+					case zeus.TextPart:
 						return casted.ID == msg.Properties.PartID
-					case opencode.ReasoningPart:
+					case zeus.ReasoningPart:
 						return casted.ID == msg.Properties.PartID
-					case opencode.FilePart:
+					case zeus.FilePart:
 						return casted.ID == msg.Properties.PartID
-					case opencode.ToolPart:
+					case zeus.ToolPart:
 						return casted.ID == msg.Properties.PartID
-					case opencode.StepStartPart:
+					case zeus.StepStartPart:
 						return casted.ID == msg.Properties.PartID
-					case opencode.StepFinishPart:
+					case zeus.StepFinishPart:
 						return casted.ID == msg.Properties.PartID
 					}
 					return false
@@ -555,14 +555,14 @@ func (a Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		}
-	case opencode.EventListResponseEventMessageRemoved:
+	case zeus.EventListResponseEventMessageRemoved:
 		slog.Debug("message removed", "session", msg.Properties.SessionID, "message", msg.Properties.MessageID)
 		if msg.Properties.SessionID == a.app.Session.ID {
 			messageIndex := slices.IndexFunc(a.app.Messages, func(m app.Message) bool {
 				switch casted := m.Info.(type) {
-				case opencode.UserMessage:
+				case zeus.UserMessage:
 					return casted.ID == msg.Properties.MessageID
-				case opencode.AssistantMessage:
+				case zeus.AssistantMessage:
 					return casted.ID == msg.Properties.MessageID
 				}
 				return false
@@ -571,13 +571,13 @@ func (a Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				a.app.Messages = append(a.app.Messages[:messageIndex], a.app.Messages[messageIndex+1:]...)
 			}
 		}
-	case opencode.EventListResponseEventMessageUpdated:
+	case zeus.EventListResponseEventMessageUpdated:
 		if msg.Properties.Info.SessionID == a.app.Session.ID {
 			matchIndex := slices.IndexFunc(a.app.Messages, func(m app.Message) bool {
 				switch casted := m.Info.(type) {
-				case opencode.UserMessage:
+				case zeus.UserMessage:
 					return casted.ID == msg.Properties.Info.ID
-				case opencode.AssistantMessage:
+				case zeus.AssistantMessage:
 					return casted.ID == msg.Properties.Info.ID
 				}
 				return false
@@ -595,9 +595,9 @@ func (a Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				// Extract the new message ID
 				var newMessageID string
 				switch casted := msg.Properties.Info.AsUnion().(type) {
-				case opencode.UserMessage:
+				case zeus.UserMessage:
 					newMessageID = casted.ID
-				case opencode.AssistantMessage:
+				case zeus.AssistantMessage:
 					newMessageID = casted.ID
 				}
 
@@ -607,9 +607,9 @@ func (a Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				for i := len(a.app.Messages) - 1; i >= 0; i-- {
 					var existingID string
 					switch casted := a.app.Messages[i].Info.(type) {
-					case opencode.UserMessage:
+					case zeus.UserMessage:
 						existingID = casted.ID
-					case opencode.AssistantMessage:
+					case zeus.AssistantMessage:
 						existingID = casted.ID
 					}
 					if existingID < newMessageID {
@@ -621,20 +621,20 @@ func (a Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				// Create the new message
 				newMessage := app.Message{
 					Info:  msg.Properties.Info.AsUnion(),
-					Parts: []opencode.PartUnion{},
+					Parts: []zeus.PartUnion{},
 				}
 
 				// Insert at the correct position
 				a.app.Messages = append(a.app.Messages[:insertIndex], append([]app.Message{newMessage}, a.app.Messages[insertIndex:]...)...)
 			}
 		}
-	case opencode.EventListResponseEventPermissionUpdated:
+	case zeus.EventListResponseEventPermissionUpdated:
 		slog.Debug("permission updated", "session", msg.Properties.SessionID, "permission", msg.Properties.ID)
 		a.app.Permissions = append(a.app.Permissions, msg.Properties)
 		a.app.CurrentPermission = a.app.Permissions[0]
 		a.editor.Blur()
-	case opencode.EventListResponseEventPermissionReplied:
-		index := slices.IndexFunc(a.app.Permissions, func(p opencode.Permission) bool {
+	case zeus.EventListResponseEventPermissionReplied:
+		index := slices.IndexFunc(a.app.Permissions, func(p zeus.Permission) bool {
 			return p.ID == msg.Properties.PermissionID
 		})
 		if index > -1 {
@@ -644,20 +644,20 @@ func (a Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if len(a.app.Permissions) > 0 {
 				a.app.CurrentPermission = a.app.Permissions[0]
 			} else {
-				a.app.CurrentPermission = opencode.Permission{}
+				a.app.CurrentPermission = zeus.Permission{}
 			}
 		}
-	case opencode.EventListResponseEventSessionError:
+	case zeus.EventListResponseEventSessionError:
 		switch err := msg.Properties.Error.AsUnion().(type) {
 		case nil:
-		case opencode.ProviderAuthError:
+		case zeus.ProviderAuthError:
 			slog.Error("Failed to authenticate with provider", "error", err.Data.Message)
 			return a, toast.NewErrorToast("Provider error: " + err.Data.Message)
-		case opencode.UnknownError:
+		case zeus.UnknownError:
 			slog.Error("Server error", "name", err.Name, "message", err.Data.Message)
 			return a, toast.NewErrorToast(err.Data.Message, toast.WithTitle(string(err.Name)))
 		}
-	case opencode.EventListResponseEventSessionCompacted:
+	case zeus.EventListResponseEventSessionCompacted:
 		if msg.Properties.SessionID == a.app.Session.ID {
 			return a, toast.NewSuccessToast("Session compacted successfully")
 		}
@@ -699,22 +699,22 @@ func (a Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// Find next user message after target
 			var nextMessageID string
 			for i := msg.Index + 1; i < len(a.app.Messages); i++ {
-				if userMsg, ok := a.app.Messages[i].Info.(opencode.UserMessage); ok {
+				if userMsg, ok := a.app.Messages[i].Info.(zeus.UserMessage); ok {
 					nextMessageID = userMsg.ID
 					break
 				}
 			}
 
-			var response *opencode.Session
+			var response *zeus.Session
 			var err error
 
 			if nextMessageID == "" {
 				// Last message - use unrevert to restore full conversation
-				response, err = a.app.Client.Session.Unrevert(context.Background(), a.app.Session.ID, opencode.SessionUnrevertParams{})
+				response, err = a.app.Client.Session.Unrevert(context.Background(), a.app.Session.ID, zeus.SessionUnrevertParams{})
 			} else {
 				// Revert to next message to make target the last visible
 				response, err = a.app.Client.Session.Revert(context.Background(), a.app.Session.ID,
-					opencode.SessionRevertParams{MessageID: opencode.F(nextMessageID)})
+					zeus.SessionRevertParams{MessageID: zeus.F(nextMessageID)})
 			}
 
 			if err != nil || response == nil {
@@ -1216,7 +1216,7 @@ func (a Model) executeCommand(command commands.Command) (tea.Model, tea.Cmd) {
 		response, err := a.app.Client.Session.Share(
 			context.Background(),
 			a.app.Session.ID,
-			opencode.SessionShareParams{},
+			zeus.SessionShareParams{},
 		)
 		if err != nil {
 			slog.Error("Failed to share session", "error", err)
@@ -1232,7 +1232,7 @@ func (a Model) executeCommand(command commands.Command) (tea.Model, tea.Cmd) {
 		_, err := a.app.Client.Session.Unshare(
 			context.Background(),
 			a.app.Session.ID,
-			opencode.SessionUnshareParams{},
+			zeus.SessionUnshareParams{},
 		)
 		if err != nil {
 			slog.Error("Failed to unshare session", "error", err)
@@ -1258,13 +1258,13 @@ func (a Model) executeCommand(command commands.Command) (tea.Model, tea.Cmd) {
 		}
 		cmds = append(cmds, func() tea.Msg {
 			parentSessionID := a.app.Session.ID
-			var parentSession *opencode.Session
+			var parentSession *zeus.Session
 			if a.app.Session.ParentID != "" {
 				parentSessionID = a.app.Session.ParentID
 				session, err := a.app.Client.Session.Get(
 					context.Background(),
 					parentSessionID,
-					opencode.SessionGetParams{},
+					zeus.SessionGetParams{},
 				)
 				if err != nil {
 					slog.Error("Failed to get parent session", "error", err)
@@ -1278,7 +1278,7 @@ func (a Model) executeCommand(command commands.Command) (tea.Model, tea.Cmd) {
 			children, err := a.app.Client.Session.Children(
 				context.Background(),
 				parentSessionID,
-				opencode.SessionChildrenParams{},
+				zeus.SessionChildrenParams{},
 			)
 			if err != nil {
 				slog.Error("Failed to get session children", "error", err)
@@ -1289,7 +1289,7 @@ func (a Model) executeCommand(command commands.Command) (tea.Model, tea.Cmd) {
 			slices.Reverse(*children)
 
 			// Create combined array: [parent, child1, child2, ...]
-			sessions := []*opencode.Session{parentSession}
+			sessions := []*zeus.Session{parentSession}
 			for i := range *children {
 				sessions = append(sessions, &(*children)[i])
 			}
@@ -1324,13 +1324,13 @@ func (a Model) executeCommand(command commands.Command) (tea.Model, tea.Cmd) {
 		}
 		cmds = append(cmds, func() tea.Msg {
 			parentSessionID := a.app.Session.ID
-			var parentSession *opencode.Session
+			var parentSession *zeus.Session
 			if a.app.Session.ParentID != "" {
 				parentSessionID = a.app.Session.ParentID
 				session, err := a.app.Client.Session.Get(
 					context.Background(),
 					parentSessionID,
-					opencode.SessionGetParams{},
+					zeus.SessionGetParams{},
 				)
 				if err != nil {
 					slog.Error("Failed to get parent session", "error", err)
@@ -1344,7 +1344,7 @@ func (a Model) executeCommand(command commands.Command) (tea.Model, tea.Cmd) {
 			children, err := a.app.Client.Session.Children(
 				context.Background(),
 				parentSessionID,
-				opencode.SessionChildrenParams{},
+				zeus.SessionChildrenParams{},
 			)
 			if err != nil {
 				slog.Error("Failed to get session children", "error", err)
@@ -1355,7 +1355,7 @@ func (a Model) executeCommand(command commands.Command) (tea.Model, tea.Cmd) {
 			slices.Reverse(*children)
 
 			// Create combined array: [parent, child1, child2, ...]
-			sessions := []*opencode.Session{parentSession}
+			sessions := []*zeus.Session{parentSession}
 			for i := range *children {
 				sessions = append(sessions, &(*children)[i])
 			}
@@ -1579,10 +1579,10 @@ func formatConversationToMarkdown(messages []app.Message) string {
 		var timestamp time.Time
 
 		switch info := msg.Info.(type) {
-		case opencode.UserMessage:
+		case zeus.UserMessage:
 			role = "User"
 			timestamp = time.UnixMilli(int64(info.Time.Created))
-		case opencode.AssistantMessage:
+		case zeus.AssistantMessage:
 			role = "Assistant"
 			timestamp = time.UnixMilli(int64(info.Time.Created))
 		default:
@@ -1595,11 +1595,11 @@ func formatConversationToMarkdown(messages []app.Message) string {
 
 		for _, part := range msg.Parts {
 			switch p := part.(type) {
-			case opencode.TextPart:
+			case zeus.TextPart:
 				builder.WriteString(p.Text + "\n\n")
-			case opencode.FilePart:
+			case zeus.FilePart:
 				builder.WriteString(fmt.Sprintf("[File: %s]\n\n", p.Filename))
-			case opencode.ToolPart:
+			case zeus.ToolPart:
 				builder.WriteString(fmt.Sprintf("[Tool: %s]\n\n", p.Tool))
 			}
 		}

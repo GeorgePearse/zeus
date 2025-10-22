@@ -1,6 +1,6 @@
 import type { Component } from "solid-js"
 import { Button, Select, Tabs } from "./components"
-import "@opencode-ai/css"
+import "@zeus-ai/css"
 import "./index.css"
 
 const App: Component = () => {

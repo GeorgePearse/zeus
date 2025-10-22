@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-package opencode
+package zeus
 
 import (
 	"context"
@@ -8,12 +8,12 @@ import (
 	"os"
 	"slices"
 
-	"github.com/sst/opencode-sdk-go/internal/requestconfig"
-	"github.com/sst/opencode-sdk-go/option"
+	"github.com/sst/zeus-sdk-go/internal/requestconfig"
+	"github.com/sst/zeus-sdk-go/option"
 )
 
 // Client creates a struct with services and top level methods that help with
-// interacting with the opencode API. You should not instantiate this client
+// interacting with the zeus API. You should not instantiate this client
 // directly, and instead use the [NewClient] method instead.
 type Client struct {
 	Options []option.RequestOption
@@ -30,18 +30,18 @@ type Client struct {
 	Tui     *TuiService
 }
 
-// DefaultClientOptions read from the environment (OPENCODE_BASE_URL). This should
+// DefaultClientOptions read from the environment (ZEUS_BASE_URL). This should
 // be used to initialize new clients.
 func DefaultClientOptions() []option.RequestOption {
 	defaults := []option.RequestOption{option.WithEnvironmentProduction()}
-	if o, ok := os.LookupEnv("OPENCODE_BASE_URL"); ok {
+	if o, ok := os.LookupEnv("ZEUS_BASE_URL"); ok {
 		defaults = append(defaults, option.WithBaseURL(o))
 	}
 	return defaults
 }
 
 // NewClient generates a new client with the default option read from the
-// environment (OPENCODE_BASE_URL). The option passed in as arguments are applied
+// environment (ZEUS_BASE_URL). The option passed in as arguments are applied
 // after these default arguments, and all option will be passed down to the
 // services and requests that this client makes.
 func NewClient(opts ...option.RequestOption) (r *Client) {

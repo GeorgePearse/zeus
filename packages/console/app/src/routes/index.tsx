@@ -1,8 +1,8 @@
 import "./index.css"
 import { Title, Meta, Link } from "@solidjs/meta"
 import { HttpHeader } from "@solidjs/start"
-import video from "../asset/lander/opencode-min.mp4"
-import videoPoster from "../asset/lander/opencode-poster.png"
+import video from "../asset/lander/zeus-min.mp4"
+import videoPoster from "../asset/lander/zeus-poster.png"
 import { IconCopy, IconCheck } from "../component/icon"
 import { A, createAsync } from "@solidjs/router"
 import { EmailSignup } from "~/component/email-signup"
@@ -40,9 +40,9 @@ export default function Home() {
   }
 
   return (
-    <main data-page="opencode">
+    <main data-page="zeus">
       <HttpHeader name="Cache-Control" value="public, max-age=1, s-maxage=3600, stale-while-revalidate=86400" />
-      <Title>OpenCode | The AI coding agent built for the terminal</Title>
+      <Title>Zeus | The AI coding agent built for the terminal</Title>
       <Link rel="icon" type="image/svg+xml" href="/favicon.svg" />
       <Meta property="og:image" content="/social-share.png" />
       <Meta name="twitter:image" content="/social-share.png" />
@@ -54,14 +54,14 @@ export default function Home() {
             <div data-slot="hero-copy">
               <a
                 data-slot="releases"
-                href={release()?.url ?? "https://github.com/sst/opencode/releases"}
+                href={release()?.url ?? "https://github.com/sst/zeus/releases"}
                 target="_blank"
               >
                 What’s new in {release()?.name ?? "the latest release"}
               </a>
               <strong>The AI coding agent built for the terminal</strong>
               <p>
-                OpenCode is fully open source, giving you control and freedom to use any provider, any model, and any
+                Zeus is fully open source, giving you control and freedom to use any provider, any model, and any
                 editor.
               </p>
               <a href="/docs">
@@ -109,7 +109,7 @@ export default function Home() {
                       <span data-slot="command-script">
                         <span>curl -fsSL </span>
                         <span data-slot="protocol">https://</span>
-                        <span data-slot="highlight">opencode.ai/install</span>
+                        <span data-slot="highlight">zeus.ai/install</span>
                         <span> | bash</span>
                       </span>
                       <CopyStatus />
@@ -119,7 +119,7 @@ export default function Home() {
                     <button data-copy data-slot="command" onClick={handleCopyClick}>
                       <span>
                         <span data-slot="protocol">npm i -g </span>
-                        <span data-slot="highlight">opencode-ai</span>
+                        <span data-slot="highlight">zeus-ai</span>
                       </span>
                       <CopyStatus />
                     </button>
@@ -128,7 +128,7 @@ export default function Home() {
                     <button data-copy data-slot="command" onClick={handleCopyClick}>
                       <span>
                         <span data-slot="protocol">bun add -g </span>
-                        <span data-slot="highlight">opencode-ai</span>
+                        <span data-slot="highlight">zeus-ai</span>
                       </span>
                       <CopyStatus />
                     </button>
@@ -137,7 +137,7 @@ export default function Home() {
                     <button data-copy data-slot="command" onClick={handleCopyClick}>
                       <span>
                         <span data-slot="protocol">brew install </span>
-                        <span data-slot="highlight">opencode</span>
+                        <span data-slot="highlight">zeus</span>
                       </span>
                       <CopyStatus />
                     </button>
@@ -146,7 +146,7 @@ export default function Home() {
                     <button data-copy data-slot="command" onClick={handleCopyClick}>
                       <span>
                         <span data-slot="protocol">paru -S </span>
-                        <span data-slot="highlight">opencode</span>
+                        <span data-slot="highlight">zeus</span>
                       </span>
                       <CopyStatus />
                     </button>
@@ -164,8 +164,8 @@ export default function Home() {
 
           <section data-component="what">
             <div data-slot="section-title">
-              <h3>What is OpenCode?</h3>
-              <p>OpenCode is an open source agent that helps you write and run code directly from the terminal.</p>
+              <h3>What is Zeus?</h3>
+              <p>Zeus is an open source agent that helps you write and run code directly from the terminal.</p>
             </div>
             <ul>
               <li>
@@ -207,7 +207,7 @@ export default function Home() {
               <li>
                 <span>[*]</span>
                 <div>
-                  <strong>Any editor</strong> OpenCode runs in your terminal, pair it with any IDE
+                  <strong>Any editor</strong> Zeus runs in your terminal, pair it with any IDE
                 </div>
               </li>
             </ul>
@@ -220,7 +220,7 @@ export default function Home() {
                 <span>[*]</span>
                 <p>
                   With over <strong>26,000</strong> GitHub stars, <strong>188</strong> contributors, and almost{" "}
-                  <strong>3,000</strong> commits, OpenCode is used and trusted by over <strong>200,000</strong>{" "}
+                  <strong>3,000</strong> commits, Zeus is used and trusted by over <strong>200,000</strong>{" "}
                   developers every month.
                 </p>
               </div>
@@ -633,7 +633,7 @@ export default function Home() {
                 <span>[*]</span>
 
                 <p>
-                  OpenCode does not store any of your code or context data, so that it can operate in privacy sensitive
+                  Zeus does not store any of your code or context data, so that it can operate in privacy sensitive
                   environments. Learn more about <a href="/docs/enterprise/ ">privacy</a>.
                 </p>
               </div>
@@ -646,53 +646,53 @@ export default function Home() {
             </div>
             <ul>
               <li>
-                <Faq question="What is OpenCode?">
-                  OpenCode is an open source agent that helps you write and run code directly from the terminal. You can
-                  pair OpenCode with any AI model, and because it’s terminal-based you can pair it with your preferred
+                <Faq question="What is Zeus?">
+                  Zeus is an open source agent that helps you write and run code directly from the terminal. You can
+                  pair Zeus with any AI model, and because it’s terminal-based you can pair it with your preferred
                   code editor.
                 </Faq>
               </li>
               <li>
-                <Faq question="How do I use OpenCode?">
+                <Faq question="How do I use Zeus?">
                   The easiest way to get started is to read the <a href="/docs">intro</a>.
                 </Faq>
               </li>
               <li>
-                <Faq question="Do I need extra AI subscriptions to use OpenCode?">
-                  Not necessarily, but probably. You’ll need an AI subscription if you want to connect OpenCode to a
+                <Faq question="Do I need extra AI subscriptions to use Zeus?">
+                  Not necessarily, but probably. You’ll need an AI subscription if you want to connect Zeus to a
                   paid provider, although you can work with{" "}
                   <a href="/docs/providers/#lm-studio" target="_blank">
                     local models
                   </a>{" "}
-                  for free. While we encourage users to use <A href="/zen">Zen</A>, OpenCode works with all popular
+                  for free. While we encourage users to use <A href="/zen">Zen</A>, Zeus works with all popular
                   providers such as OpenAI, Anthropic, xAI etc.
                 </Faq>
               </li>
               <li>
-                <Faq question="Can I only use OpenCode in the terminal?">
+                <Faq question="Can I only use Zeus in the terminal?">
                   Yes, for now. We are actively working on a desktop app. Join the waitlist for early access.
                 </Faq>
               </li>
               <li>
-                <Faq question="How much does OpenCode cost?">
-                  OpenCode is 100% free to use. Any additional costs will come from your subscription to a model
-                  provider. While OpenCode works with any model provider, we recommend using <A href="/zen">Zen</A>.
+                <Faq question="How much does Zeus cost?">
+                  Zeus is 100% free to use. Any additional costs will come from your subscription to a model
+                  provider. While Zeus works with any model provider, we recommend using <A href="/zen">Zen</A>.
                 </Faq>
               </li>
               <li>
                 <Faq question="What about data and privacy?">
-                  Your data and information is only stored when you create sharable links in OpenCode. Learn more about{" "}
+                  Your data and information is only stored when you create sharable links in Zeus. Learn more about{" "}
                   <a href="/docs/share/#privacy">share pages</a>.
                 </Faq>
               </li>
               <li>
-                <Faq question="Is OpenCode open source?">
-                  Yes, OpenCode is fully open source. The source code is public on{" "}
-                  <a href="https://github.com/sst/opencode" target="_blank">
+                <Faq question="Is Zeus open source?">
+                  Yes, Zeus is fully open source. The source code is public on{" "}
+                  <a href="https://github.com/sst/zeus" target="_blank">
                     GitHub
                   </a>{" "}
                   under the{" "}
-                  <a href="https://github.com/sst/opencode?tab=MIT-1-ov-file#readme" target="_blank">
+                  <a href="https://github.com/sst/zeus?tab=MIT-1-ov-file#readme" target="_blank">
                     MIT License
                   </a>
                   , meaning anyone can use, modify, or contribute to its development. Anyone from the community can file
@@ -706,7 +706,7 @@ export default function Home() {
             <div data-slot="zen-cta-copy">
               <strong>Access reliable optimized models for coding agents</strong>
               <p>
-                Zen gives you access to a handpicked set of AI models that OpenCode has tested and benchmarked
+                Zen gives you access to a handpicked set of AI models that Zeus has tested and benchmarked
                 specifically for coding agents. No need to worry about inconsistent performance and quality across
                 providers, use validated models that work.
               </p>

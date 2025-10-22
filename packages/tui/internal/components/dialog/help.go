@@ -2,12 +2,12 @@ package dialog
 
 import (
 	tea "github.com/charmbracelet/bubbletea/v2"
-	"github.com/sst/opencode/internal/app"
-	commandsComponent "github.com/sst/opencode/internal/components/commands"
-	"github.com/sst/opencode/internal/components/modal"
-	"github.com/sst/opencode/internal/layout"
-	"github.com/sst/opencode/internal/theme"
-	"github.com/sst/opencode/internal/viewport"
+	"github.com/sst/zeus/internal/app"
+	commandsComponent "github.com/sst/zeus/internal/components/commands"
+	"github.com/sst/zeus/internal/components/modal"
+	"github.com/sst/zeus/internal/layout"
+	"github.com/sst/zeus/internal/theme"
+	"github.com/sst/zeus/internal/viewport"
 )
 
 type helpDialog struct {

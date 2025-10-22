@@ -1,28 +1,28 @@
-name: "opencode GitHub Action"
-description: "Run opencode in GitHub Actions workflows"
+name: "zeus GitHub Action"
+description: "Run zeus in GitHub Actions workflows"
 branding:
   icon: "code"
   color: "orange"
 
 inputs:
   model:
-    description: "The model to use with opencode. Takes the format of `provider/model`."
+    description: "The model to use with zeus. Takes the format of `provider/model`."
     required: true
 
   share:
-    description: "Whether to share the opencode session. Defaults to true for public repositories."
+    description: "Whether to share the zeus session. Defaults to true for public repositories."
     required: false
 
   token:
-    description: "Optional GitHub access token for performing operations such as creating comments, committing changes, and opening pull requests. Defaults to the installation access token from the opencode GitHub App."
+    description: "Optional GitHub access token for performing operations such as creating comments, committing changes, and opening pull requests. Defaults to the installation access token from the zeus GitHub App."
     required: false
 
 runs:
   using: "composite"
   steps:
-    - name: Install opencode
+    - name: Install zeus
       shell: bash
-      run: curl -fsSL https://opencode.ai/install | bash
+      run: curl -fsSL https://zeus.ai/install | bash
 
     - name: Install bun
       shell: bash
@@ -34,7 +34,7 @@ runs:
         cd ${GITHUB_ACTION_PATH}
         bun install
 
-    - name: Run opencode
+    - name: Run zeus
       shell: bash
       run: bun ${GITHUB_ACTION_PATH}/index.ts
       env:

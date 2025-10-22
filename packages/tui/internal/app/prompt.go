@@ -4,9 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode/internal/attachment"
-	"github.com/sst/opencode/internal/id"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus/internal/attachment"
+	"github.com/sst/zeus/internal/id"
 )
 
 type Prompt struct {
@@ -18,11 +18,11 @@ func (p Prompt) ToMessage(
 	messageID string,
 	sessionID string,
 ) Message {
-	message := opencode.UserMessage{
+	message := zeus.UserMessage{
 		ID:        messageID,
 		SessionID: sessionID,
-		Role:      opencode.UserMessageRoleUser,
-		Time: opencode.UserMessageTime{
+		Role:      zeus.UserMessageRoleUser,
+		Time: zeus.UserMessageTime{
 			Created: float64(time.Now().UnixMilli()),
 		},
 	}
@@ -50,22 +50,22 @@ func (p Prompt) ToMessage(
 		}
 	}
 
-	parts := []opencode.PartUnion{opencode.TextPart{
+	parts := []zeus.PartUnion{zeus.TextPart{
 		ID:        id.Ascending(id.Part),
 		MessageID: messageID,
 		SessionID: sessionID,
-		Type:      opencode.TextPartTypeText,
+		Type:      zeus.TextPartTypeText,
 		Text:      text,
 	}}
 	for _, attachment := range p.Attachments {
 		if attachment.Type == "agent" {
 			source, _ := attachment.GetAgentSource()
-			parts = append(parts, opencode.AgentPart{
+			parts = append(parts, zeus.AgentPart{
 				ID:        id.Ascending(id.Part),
 				MessageID: messageID,
 				SessionID: sessionID,
 				Name:      source.Name,
-				Source: opencode.AgentPartSource{
+				Source: zeus.AgentPartSource{
 					Value: attachment.Display,
 					Start: int64(attachment.StartIndex),
 					End:   int64(attachment.EndIndex),
@@ -74,37 +74,37 @@ func (p Prompt) ToMessage(
 			continue
 		}
 
-		text := opencode.FilePartSourceText{
+		text := zeus.FilePartSourceText{
 			Start: int64(attachment.StartIndex),
 			End:   int64(attachment.EndIndex),
 			Value: attachment.Display,
 		}
-		source := &opencode.FilePartSource{}
+		source := &zeus.FilePartSource{}
 		switch attachment.Type {
 		case "text":
 			continue
 		case "file":
 			if fileSource, ok := attachment.GetFileSource(); ok {
-				source = &opencode.FilePartSource{
+				source = &zeus.FilePartSource{
 					Text: text,
 					Path: fileSource.Path,
-					Type: opencode.FilePartSourceTypeFile,
+					Type: zeus.FilePartSourceTypeFile,
 				}
 			}
 		case "symbol":
 			if symbolSource, ok := attachment.GetSymbolSource(); ok {
-				source = &opencode.FilePartSource{
+				source = &zeus.FilePartSource{
 					Text: text,
 					Path: symbolSource.Path,
-					Type: opencode.FilePartSourceTypeSymbol,
+					Type: zeus.FilePartSourceTypeSymbol,
 					Kind: int64(symbolSource.Kind),
 					Name: symbolSource.Name,
-					Range: opencode.SymbolSourceRange{
-						Start: opencode.SymbolSourceRangeStart{
+					Range: zeus.SymbolSourceRange{
+						Start: zeus.SymbolSourceRangeStart{
 							Line:      float64(symbolSource.Range.Start.Line),
 							Character: float64(symbolSource.Range.Start.Char),
 						},
-						End: opencode.SymbolSourceRangeEnd{
+						End: zeus.SymbolSourceRangeEnd{
 							Line:      float64(symbolSource.Range.End.Line),
 							Character: float64(symbolSource.Range.End.Char),
 						},
@@ -112,11 +112,11 @@ func (p Prompt) ToMessage(
 				}
 			}
 		}
-		parts = append(parts, opencode.FilePart{
+		parts = append(parts, zeus.FilePart{
 			ID:        id.Ascending(id.Part),
 			MessageID: messageID,
 			SessionID: sessionID,
-			Type:      opencode.FilePartTypeFile,
+			Type:      zeus.FilePartTypeFile,
 			Filename:  attachment.Filename,
 			Mime:      attachment.MediaType,
 			URL:       attachment.URL,
@@ -131,17 +131,17 @@ func (p Prompt) ToMessage(
 
 func (m Message) ToPrompt() (*Prompt, error) {
 	switch m.Info.(type) {
-	case opencode.UserMessage:
+	case zeus.UserMessage:
 		text := ""
 		attachments := []*attachment.Attachment{}
 		for _, part := range m.Parts {
 			switch p := part.(type) {
-			case opencode.TextPart:
+			case zeus.TextPart:
 				if p.Synthetic {
 					continue
 				}
 				text += p.Text + " "
-			case opencode.AgentPart:
+			case zeus.AgentPart:
 				attachments = append(attachments, &attachment.Attachment{
 					ID:         p.ID,
 					Type:       "agent",
@@ -152,7 +152,7 @@ func (m Message) ToPrompt() (*Prompt, error) {
 						Name: p.Name,
 					},
 				})
-			case opencode.FilePart:
+			case zeus.FilePart:
 				switch p.Source.Type {
 				case "file":
 					attachments = append(attachments, &attachment.Attachment{
@@ -170,7 +170,7 @@ func (m Message) ToPrompt() (*Prompt, error) {
 						},
 					})
 				case "symbol":
-					r := p.Source.Range.(opencode.SymbolSourceRange)
+					r := p.Source.Range.(zeus.SymbolSourceRange)
 					attachments = append(attachments, &attachment.Attachment{
 						ID:         p.ID,
 						Type:       "symbol",
@@ -207,74 +207,74 @@ func (m Message) ToPrompt() (*Prompt, error) {
 	return nil, errors.New("unknown message type")
 }
 
-func (m Message) ToSessionChatParams() []opencode.SessionPromptParamsPartUnion {
-	parts := []opencode.SessionPromptParamsPartUnion{}
+func (m Message) ToSessionChatParams() []zeus.SessionPromptParamsPartUnion {
+	parts := []zeus.SessionPromptParamsPartUnion{}
 	for _, part := range m.Parts {
 		switch p := part.(type) {
-		case opencode.TextPart:
-			parts = append(parts, opencode.TextPartInputParam{
-				ID:        opencode.F(p.ID),
-				Type:      opencode.F(opencode.TextPartInputTypeText),
-				Text:      opencode.F(p.Text),
-				Synthetic: opencode.F(p.Synthetic),
-				Time: opencode.F(opencode.TextPartInputTimeParam{
-					Start: opencode.F(p.Time.Start),
-					End:   opencode.F(p.Time.End),
+		case zeus.TextPart:
+			parts = append(parts, zeus.TextPartInputParam{
+				ID:        zeus.F(p.ID),
+				Type:      zeus.F(zeus.TextPartInputTypeText),
+				Text:      zeus.F(p.Text),
+				Synthetic: zeus.F(p.Synthetic),
+				Time: zeus.F(zeus.TextPartInputTimeParam{
+					Start: zeus.F(p.Time.Start),
+					End:   zeus.F(p.Time.End),
 				}),
 			})
-		case opencode.FilePart:
-			var source opencode.FilePartSourceUnionParam
+		case zeus.FilePart:
+			var source zeus.FilePartSourceUnionParam
 			switch p.Source.Type {
 			case "file":
-				source = opencode.FileSourceParam{
-					Type: opencode.F(opencode.FileSourceTypeFile),
-					Path: opencode.F(p.Source.Path),
-					Text: opencode.F(opencode.FilePartSourceTextParam{
-						Start: opencode.F(int64(p.Source.Text.Start)),
-						End:   opencode.F(int64(p.Source.Text.End)),
-						Value: opencode.F(p.Source.Text.Value),
+				source = zeus.FileSourceParam{
+					Type: zeus.F(zeus.FileSourceTypeFile),
+					Path: zeus.F(p.Source.Path),
+					Text: zeus.F(zeus.FilePartSourceTextParam{
+						Start: zeus.F(int64(p.Source.Text.Start)),
+						End:   zeus.F(int64(p.Source.Text.End)),
+						Value: zeus.F(p.Source.Text.Value),
 					}),
 				}
 			case "symbol":
-				source = opencode.SymbolSourceParam{
-					Type: opencode.F(opencode.SymbolSourceTypeSymbol),
-					Path: opencode.F(p.Source.Path),
-					Name: opencode.F(p.Source.Name),
-					Kind: opencode.F(p.Source.Kind),
-					Range: opencode.F(opencode.SymbolSourceRangeParam{
-						Start: opencode.F(opencode.SymbolSourceRangeStartParam{
-							Line:      opencode.F(float64(p.Source.Range.(opencode.SymbolSourceRange).Start.Line)),
-							Character: opencode.F(float64(p.Source.Range.(opencode.SymbolSourceRange).Start.Character)),
+				source = zeus.SymbolSourceParam{
+					Type: zeus.F(zeus.SymbolSourceTypeSymbol),
+					Path: zeus.F(p.Source.Path),
+					Name: zeus.F(p.Source.Name),
+					Kind: zeus.F(p.Source.Kind),
+					Range: zeus.F(zeus.SymbolSourceRangeParam{
+						Start: zeus.F(zeus.SymbolSourceRangeStartParam{
+							Line:      zeus.F(float64(p.Source.Range.(zeus.SymbolSourceRange).Start.Line)),
+							Character: zeus.F(float64(p.Source.Range.(zeus.SymbolSourceRange).Start.Character)),
 						}),
-						End: opencode.F(opencode.SymbolSourceRangeEndParam{
-							Line:      opencode.F(float64(p.Source.Range.(opencode.SymbolSourceRange).End.Line)),
-							Character: opencode.F(float64(p.Source.Range.(opencode.SymbolSourceRange).End.Character)),
+						End: zeus.F(zeus.SymbolSourceRangeEndParam{
+							Line:      zeus.F(float64(p.Source.Range.(zeus.SymbolSourceRange).End.Line)),
+							Character: zeus.F(float64(p.Source.Range.(zeus.SymbolSourceRange).End.Character)),
 						}),
 					}),
-					Text: opencode.F(opencode.FilePartSourceTextParam{
-						Value: opencode.F(p.Source.Text.Value),
-						Start: opencode.F(p.Source.Text.Start),
-						End:   opencode.F(p.Source.Text.End),
+					Text: zeus.F(zeus.FilePartSourceTextParam{
+						Value: zeus.F(p.Source.Text.Value),
+						Start: zeus.F(p.Source.Text.Start),
+						End:   zeus.F(p.Source.Text.End),
 					}),
 				}
 			}
-			parts = append(parts, opencode.FilePartInputParam{
-				ID:       opencode.F(p.ID),
-				Type:     opencode.F(opencode.FilePartInputTypeFile),
-				Mime:     opencode.F(p.Mime),
-				URL:      opencode.F(p.URL),
-				Filename: opencode.F(p.Filename),
-				Source:   opencode.F(source),
+			parts = append(parts, zeus.FilePartInputParam{
+				ID:       zeus.F(p.ID),
+				Type:     zeus.F(zeus.FilePartInputTypeFile),
+				Mime:     zeus.F(p.Mime),
+				URL:      zeus.F(p.URL),
+				Filename: zeus.F(p.Filename),
+				Source:   zeus.F(source),
 			})
-		case opencode.AgentPart:
-			parts = append(parts, opencode.AgentPartInputParam{
-				ID:   opencode.F(p.ID),
-				Type: opencode.F(opencode.AgentPartInputTypeAgent),
-				Name: opencode.F(p.Name),
-				Source: opencode.F(opencode.AgentPartInputSourceParam{
-					Value: opencode.F(p.Source.Value),
-					Start: opencode.F(p.Source.Start),
-					End:   opencode.F(p.Source.End),
+		case zeus.AgentPart:
+			parts = append(parts, zeus.AgentPartInputParam{
+				ID:   zeus.F(p.ID),
+				Type: zeus.F(zeus.AgentPartInputTypeAgent),
+				Name: zeus.F(p.Name),
+				Source: zeus.F(zeus.AgentPartInputSourceParam{
+					Value: zeus.F(p.Source.Value),
+					Start: zeus.F(p.Source.Start),
+					End:   zeus.F(p.Source.End),
 				}),
 			})
 		}

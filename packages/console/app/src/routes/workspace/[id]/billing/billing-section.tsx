@@ -1,11 +1,11 @@
 import { json, query, action, useParams, useAction, createAsync, useSubmission } from "@solidjs/router"
 import { createMemo, Show } from "solid-js"
-import { Billing } from "@opencode-ai/console-core/billing.js"
+import { Billing } from "@zeus-ai/console-core/billing.js"
 import { withActor } from "~/context/auth.withActor"
 import { IconCreditCard } from "~/component/icon"
 import styles from "./billing-section.module.css"
-import { Database, eq } from "@opencode-ai/console-core/drizzle/index.js"
-import { BillingTable } from "@opencode-ai/console-core/schema/billing.sql.js"
+import { Database, eq } from "@zeus-ai/console-core/drizzle/index.js"
+import { BillingTable } from "@zeus-ai/console-core/schema/billing.sql.js"
 import { createCheckoutUrl } from "../../common"
 
 const reload = action(async (form: FormData) => {

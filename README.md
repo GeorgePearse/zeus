@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://opencode.ai">
+  <a href="https://zeus.ai">
     <picture>
       <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
       <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
@@ -9,12 +9,12 @@
 </p>
 <p align="center">⚡ Zeus - The AI coding agent built for the terminal.</p>
 <p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
-  <a href="https://github.com/sst/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/sst/opencode/publish.yml?style=flat-square&branch=dev" /></a>
+  <a href="https://zeus.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
+  <a href="https://www.npmjs.com/package/zeus-ai"><img alt="npm" src="https://img.shields.io/npm/v/zeus-ai?style=flat-square" /></a>
+  <a href="https://github.com/sst/zeus/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/sst/zeus/publish.yml?style=flat-square&branch=dev" /></a>
 </p>
 
-[![⚡ Zeus Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
+[![⚡ Zeus Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://zeus.ai)
 
 ---
 
@@ -22,12 +22,12 @@
 
 ```bash
 # YOLO
-curl -fsSL https://opencode.ai/install | bash
+curl -fsSL https://zeus.ai/install | bash
 
 # Package managers
-npm i -g opencode-ai@latest        # or bun/pnpm/yarn
-brew install sst/tap/opencode      # macOS and Linux
-paru -S opencode-bin               # Arch Linux
+npm i -g zeus-ai@latest        # or bun/pnpm/yarn
+brew install sst/tap/zeus      # macOS and Linux
+paru -S zeus-bin               # Arch Linux
 ```
 
 > [!TIP]
@@ -37,20 +37,20 @@ paru -S opencode-bin               # Arch Linux
 
 The install script respects the following priority order for the installation path:
 
-1. `$OPENCODE_INSTALL_DIR` - Custom installation directory
+1. `$ZEUS_INSTALL_DIR` - Custom installation directory
 2. `$XDG_BIN_DIR` - XDG Base Directory Specification compliant path
 3. `$HOME/bin` - Standard user binary directory (if exists or can be created)
-4. `$HOME/.opencode/bin` - Default fallback
+4. `$HOME/.zeus/bin` - Default fallback
 
 ```bash
 # Examples
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
+ZEUS_INSTALL_DIR=/usr/local/bin curl -fsSL https://zeus.ai/install | bash
+XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://zeus.ai/install | bash
 ```
 
 ### Documentation
 
-For more info on how to configure ⚡ Zeus [**head over to our docs**](https://opencode.ai/docs).
+For more info on how to configure ⚡ Zeus [**head over to our docs**](https://zeus.ai/docs).
 
 ### OptiLLM Integration
 
@@ -68,7 +68,7 @@ By default ⚡ Zeus connects to `http://127.0.0.1:8000/v1`. Override this or sec
 - `OPTILLM_API_KEY` – shared secret required by the proxy
 - `OPTILLM_APPROACH` – force a specific approach such as `moa`, `plansearch`, or `mars`
 
-Pick any OptiLLM strategy model from the palette (for example `optillm/moa-gpt-4o-mini`). To make it the default, drop this in `opencode.jsonc`:
+Pick any OptiLLM strategy model from the palette (for example `optillm/moa-gpt-4o-mini`). To make it the default, drop this in `zeus.jsonc`:
 
 ```jsonc
 {
@@ -138,7 +138,7 @@ zuban check
 
 #### Development Notes
 
-**API Client**: After making changes to the TypeScript API endpoints in `packages/opencode/src/server/server.ts`, you will need the ⚡ Zeus team to generate a new stainless sdk for the clients.
+**API Client**: After making changes to the TypeScript API endpoints in `packages/zeus/src/server/server.ts`, you will need the ⚡ Zeus team to generate a new stainless sdk for the clients.
 
 ### FAQ
 
@@ -212,4 +212,4 @@ An experimental framework combining Large Language Models with evolutionary algo
 
 ---
 
-**Join our community** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+**Join our community** [Discord](https://discord.gg/zeus) | [X.com](https://x.com/zeus)

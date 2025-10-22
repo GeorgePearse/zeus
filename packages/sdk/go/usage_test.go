@@ -7,9 +7,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode-sdk-go/internal/testutil"
-	"github.com/sst/opencode-sdk-go/option"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus-sdk-go/internal/testutil"
+	"github.com/sst/zeus-sdk-go/option"
 )
 
 func TestUsage(t *testing.T) {
@@ -20,10 +20,10 @@ func TestUsage(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	client := opencode.NewClient(
+	client := zeus.NewClient(
 		option.WithBaseURL(baseURL),
 	)
-	sessions, err := client.Session.List(context.TODO(), opencode.SessionListParams{})
+	sessions, err := client.Session.List(context.TODO(), zeus.SessionListParams{})
 	if err != nil {
 		t.Error(err)
 		return

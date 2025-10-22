@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"sync"
 
-	opencode "github.com/sst/opencode-sdk-go"
+	zeus "github.com/sst/zeus-sdk-go"
 )
 
 func sanitizeValue(val any) any {
@@ -28,23 +28,23 @@ func sanitizeValue(val any) any {
 }
 
 type APILogHandler struct {
-	client  *opencode.Client
+	client  *zeus.Client
 	service string
 	level   slog.Level
 	attrs   []slog.Attr
 	groups  []string
 	mu      sync.Mutex
-	queue   chan opencode.AppLogParams
+	queue   chan zeus.AppLogParams
 }
 
-func NewAPILogHandler(ctx context.Context, client *opencode.Client, service string, level slog.Level) *APILogHandler {
+func NewAPILogHandler(ctx context.Context, client *zeus.Client, service string, level slog.Level) *APILogHandler {
 	result := &APILogHandler{
 		client:  client,
 		service: service,
 		level:   level,
 		attrs:   make([]slog.Attr, 0),
 		groups:  make([]string, 0),
-		queue:   make(chan opencode.AppLogParams, 100_000),
+		queue:   make(chan zeus.AppLogParams, 100_000),
 	}
 	go func() {
 		for {
@@ -67,18 +67,18 @@ func (h *APILogHandler) Enabled(_ context.Context, level slog.Level) bool {
 }
 
 func (h *APILogHandler) Handle(ctx context.Context, r slog.Record) error {
-	var apiLevel opencode.AppLogParamsLevel
+	var apiLevel zeus.AppLogParamsLevel
 	switch r.Level {
 	case slog.LevelDebug:
-		apiLevel = opencode.AppLogParamsLevelDebug
+		apiLevel = zeus.AppLogParamsLevelDebug
 	case slog.LevelInfo:
-		apiLevel = opencode.AppLogParamsLevelInfo
+		apiLevel = zeus.AppLogParamsLevelInfo
 	case slog.LevelWarn:
-		apiLevel = opencode.AppLogParamsLevelWarn
+		apiLevel = zeus.AppLogParamsLevelWarn
 	case slog.LevelError:
-		apiLevel = opencode.AppLogParamsLevelError
+		apiLevel = zeus.AppLogParamsLevelError
 	default:
-		apiLevel = opencode.AppLogParamsLevelInfo
+		apiLevel = zeus.AppLogParamsLevelInfo
 	}
 
 	extra := make(map[string]any)
@@ -96,14 +96,14 @@ func (h *APILogHandler) Handle(ctx context.Context, r slog.Record) error {
 		return true
 	})
 
-	params := opencode.AppLogParams{
-		Service: opencode.F(h.service),
-		Level:   opencode.F(apiLevel),
-		Message: opencode.F(r.Message),
+	params := zeus.AppLogParams{
+		Service: zeus.F(h.service),
+		Level:   zeus.F(apiLevel),
+		Message: zeus.F(r.Message),
 	}
 
 	if len(extra) > 0 {
-		params.Extra = opencode.F(extra)
+		params.Extra = zeus.F(extra)
 	}
 
 	h.queue <- params

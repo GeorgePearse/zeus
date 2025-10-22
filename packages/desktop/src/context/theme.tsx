@@ -30,7 +30,7 @@ interface ThemeProviderProps {
   defaultDarkMode?: boolean
 }
 
-const themes = ["opencode", "tokyonight", "ayu", "nord", "catppuccin"]
+const themes = ["zeus", "tokyonight", "ayu", "nord", "catppuccin"]
 
 export const ThemeProvider: ParentComponent<ThemeProviderProps> = (props) => {
   const [theme, setThemeSignal] = createSignal<string | undefined>()
@@ -56,7 +56,7 @@ export const ThemeProvider: ParentComponent<ThemeProviderProps> = (props) => {
   })
 
   onMount(() => {
-    const savedTheme = localStorage.getItem("theme") ?? "opencode"
+    const savedTheme = localStorage.getItem("theme") ?? "zeus"
     const savedDarkMode = localStorage.getItem("darkMode") ?? "true"
     setIsDark(savedDarkMode === "true")
     setTheme(savedTheme)

@@ -41,7 +41,7 @@ type State struct {
 
 func NewState() *State {
 	return &State{
-		Theme:              "opencode",
+		Theme:              "zeus",
 		Agent:              "build",
 		AgentModel:         make(map[string]AgentModel),
 		RecentlyUsedModels: make([]ModelUsage, 0),

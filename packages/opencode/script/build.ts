@@ -5,7 +5,7 @@ process.chdir(dir)
 import { $ } from "bun"
 
 import pkg from "../package.json"
-import { Script } from "@opencode-ai/script"
+import { Script } from "@zeus-ai/script"
 
 const GOARCH: Record<string, string> = {
   arm64: "arm64",
@@ -30,7 +30,7 @@ for (const [os, arch] of targets) {
   console.log(`building ${os}-${arch}`)
   const name = `${pkg.name}-${os}-${arch}`
   await $`mkdir -p dist/${name}/bin`
-  await $`CGO_ENABLED=0 GOOS=${os} GOARCH=${GOARCH[arch]} go build -ldflags="-s -w -X main.Version=${Script.version}" -o ../opencode/dist/${name}/bin/tui ../tui/cmd/opencode/main.go`
+  await $`CGO_ENABLED=0 GOOS=${os} GOARCH=${GOARCH[arch]} go build -ldflags="-s -w -X main.Version=${Script.version}" -o ../zeus/dist/${name}/bin/tui ../tui/cmd/zeus/main.go`
     .cwd("../tui")
     .quiet()
 
@@ -42,15 +42,15 @@ for (const [os, arch] of targets) {
   await Bun.build({
     compile: {
       target: `bun-${os}-${arch}` as any,
-      outfile: `dist/${name}/bin/opencode`,
-      execArgv: [`--user-agent=opencode/${Script.version}`, `--env-file=""`, `--`],
+      outfile: `dist/${name}/bin/zeus`,
+      execArgv: [`--user-agent=zeus/${Script.version}`, `--env-file=""`, `--`],
       windows: {},
     },
     entrypoints: ["./src/index.ts"],
     define: {
-      OPENCODE_VERSION: `'${Script.version}'`,
-      OPENCODE_CHANNEL: `'${Script.channel}'`,
-      OPENCODE_TUI_PATH: `'../../../dist/${name}/bin/tui'`,
+      ZEUS_VERSION: `'${Script.version}'`,
+      ZEUS_CHANNEL: `'${Script.channel}'`,
+      ZEUS_TUI_PATH: `'../../../dist/${name}/bin/tui'`,
     },
   })
   await $`rm -rf ./dist/${name}/bin/tui`

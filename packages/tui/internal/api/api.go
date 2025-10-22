@@ -6,7 +6,7 @@ import (
 	"log"
 
 	tea "github.com/charmbracelet/bubbletea/v2"
-	"github.com/sst/opencode-sdk-go"
+	"github.com/sst/zeus-sdk-go"
 )
 
 type Request struct {
@@ -14,7 +14,7 @@ type Request struct {
 	Body json.RawMessage `json:"body"`
 }
 
-func Start(ctx context.Context, program *tea.Program, client *opencode.Client) {
+func Start(ctx context.Context, program *tea.Program, client *zeus.Client) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -30,7 +30,7 @@ func Start(ctx context.Context, program *tea.Program, client *opencode.Client) {
 	}
 }
 
-func Reply(ctx context.Context, client *opencode.Client, response interface{}) tea.Cmd {
+func Reply(ctx context.Context, client *zeus.Client, response interface{}) tea.Cmd {
 	return func() tea.Msg {
 		err := client.Post(ctx, "/tui/control/response", response, nil)
 		if err != nil {

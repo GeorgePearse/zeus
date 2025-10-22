@@ -162,7 +162,7 @@ export namespace Session {
     log.info("created", result)
     await Storage.write(["session", Instance.project.id, result.id], result)
     const cfg = await Config.get()
-    if (!result.parentID && (Flag.OPENCODE_AUTO_SHARE || cfg.share === "auto"))
+    if (!result.parentID && (Flag.ZEUS_AUTO_SHARE || cfg.share === "auto"))
       share(result.id)
         .then((share) => {
           update(result.id, (draft) => {

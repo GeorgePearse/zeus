@@ -1,6 +1,6 @@
 import { useLocal, useSync } from "@/context"
 import { Collapsible, Icon } from "@/ui"
-import type { Part, ToolPart } from "@opencode-ai/sdk"
+import type { Part, ToolPart } from "@zeus-ai/sdk"
 import { DateTime } from "luxon"
 import {
   createSignal,

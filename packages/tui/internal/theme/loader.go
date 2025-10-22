@@ -64,9 +64,9 @@ func LoadThemesFromJSON() error {
 // LoadThemesFromDirectories loads themes from user directories in the correct override order.
 // The hierarchy is (from lowest to highest priority):
 // 1. Built-in themes (embedded)
-// 2. USER_CONFIG/opencode/themes/*.json
-// 3. PROJECT_ROOT/.opencode/themes/*.json
-// 4. CWD/.opencode/themes/*.json
+// 2. USER_CONFIG/zeus/themes/*.json
+// 3. PROJECT_ROOT/.zeus/themes/*.json
+// 4. CWD/.zeus/themes/*.json
 func LoadThemesFromDirectories(userConfig, projectRoot, cwd string) error {
 	if err := LoadThemesFromJSON(); err != nil {
 		return fmt.Errorf("failed to load built-in themes: %w", err)
@@ -74,10 +74,10 @@ func LoadThemesFromDirectories(userConfig, projectRoot, cwd string) error {
 
 	dirs := []string{
 		filepath.Join(userConfig, "themes"),
-		filepath.Join(projectRoot, ".opencode", "themes"),
+		filepath.Join(projectRoot, ".zeus", "themes"),
 	}
 	if cwd != projectRoot {
-		dirs = append(dirs, filepath.Join(cwd, ".opencode", "themes"))
+		dirs = append(dirs, filepath.Join(cwd, ".zeus", "themes"))
 	}
 
 	for _, dir := range dirs {

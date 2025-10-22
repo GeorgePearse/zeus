@@ -1,6 +1,6 @@
 package completions
 
-import "github.com/sst/opencode/internal/styles"
+import "github.com/sst/zeus/internal/styles"
 
 // CompletionSuggestion represents a data-only completion suggestion
 // with no styling or rendering logic
@@ -18,7 +18,7 @@ type CompletionSuggestion struct {
 	// The ID of the provider that generated this suggestion.
 	ProviderID string
 
-	// The raw, underlying data object (e.g., opencode.Symbol, commands.Command).
+	// The raw, underlying data object (e.g., zeus.Symbol, commands.Command).
 	// This allows the selection handler to perform rich actions.
 	RawData any
 }

@@ -5,7 +5,7 @@ import { ModelTable } from "./schema/model.sql"
 import { Identifier } from "./identifier"
 import { fn } from "./util/fn"
 import { Actor } from "./actor"
-import { Resource } from "@opencode-ai/console-resource"
+import { Resource } from "@zeus-ai/console-resource"
 
 export namespace ZenModel {
   const ModelCostSchema = z.object({

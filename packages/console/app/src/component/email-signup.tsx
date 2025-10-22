@@ -1,6 +1,6 @@
 import { action, useSubmission } from "@solidjs/router"
 import dock from "../asset/lander/dock.png"
-import { Resource } from "@opencode-ai/console-resource"
+import { Resource } from "@zeus-ai/console-resource"
 import { Show } from "solid-js"
 
 const emailSignup = action(async (formData: FormData) => {
@@ -29,7 +29,7 @@ export function EmailSignup() {
         <img src={dock} alt="" />
       </div>
       <div data-slot="section-title">
-        <h3>OpenCode will be available on desktop soon</h3>
+        <h3>Zeus will be available on desktop soon</h3>
         <p>Join the waitlist for early access.</p>
       </div>
       <form data-slot="form" action={emailSignup} method="post">

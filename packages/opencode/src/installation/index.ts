@@ -6,8 +6,8 @@ import { Bus } from "../bus"
 import { Log } from "../util/log"
 
 declare global {
-  const OPENCODE_VERSION: string
-  const OPENCODE_CHANNEL: string
+  const ZEUS_VERSION: string
+  const ZEUS_CHANNEL: string
 }
 
 export namespace Installation {
@@ -50,7 +50,7 @@ export namespace Installation {
   }
 
   export async function method() {
-    if (process.execPath.includes(path.join(".opencode", "bin"))) return "curl"
+    if (process.execPath.includes(path.join(".zeus", "bin"))) return "curl"
     if (process.execPath.includes(path.join(".local", "bin"))) return "curl"
     const exec = process.execPath.toLowerCase()
 
@@ -73,7 +73,7 @@ export namespace Installation {
       },
       {
         name: "brew" as const,
-        command: () => $`brew list --formula opencode-ai`.throws(false).text(),
+        command: () => $`brew list --formula zeus-ai`.throws(false).text(),
       },
     ]
 
@@ -87,7 +87,7 @@ export namespace Installation {
 
     for (const check of checks) {
       const output = await check.command()
-      if (output.includes("opencode-ai")) {
+      if (output.includes("zeus-ai")) {
         return check.name
       }
     }
@@ -106,18 +106,18 @@ export namespace Installation {
     const cmd = (() => {
       switch (method) {
         case "curl":
-          return $`curl -fsSL https://opencode.ai/install | bash`.env({
+          return $`curl -fsSL https://zeus.ai/install | bash`.env({
             ...process.env,
             VERSION: target,
           })
         case "npm":
-          return $`npm install -g opencode-ai@${target}`
+          return $`npm install -g zeus-ai@${target}`
         case "pnpm":
-          return $`pnpm install -g opencode-ai@${target}`
+          return $`pnpm install -g zeus-ai@${target}`
         case "bun":
-          return $`bun install -g opencode-ai@${target}`
+          return $`bun install -g zeus-ai@${target}`
         case "brew":
-          return $`brew install sst/tap/opencode`.env({
+          return $`brew install sst/tap/zeus`.env({
             HOMEBREW_NO_AUTO_UPDATE: "1",
           })
         default:
@@ -137,12 +137,12 @@ export namespace Installation {
       })
   }
 
-  export const VERSION = typeof OPENCODE_VERSION === "string" ? OPENCODE_VERSION : "local"
-  export const CHANNEL = typeof OPENCODE_CHANNEL === "string" ? OPENCODE_CHANNEL : "local"
-  export const USER_AGENT = `opencode/${CHANNEL}/${VERSION}`
+  export const VERSION = typeof ZEUS_VERSION === "string" ? ZEUS_VERSION : "local"
+  export const CHANNEL = typeof ZEUS_CHANNEL === "string" ? ZEUS_CHANNEL : "local"
+  export const USER_AGENT = `zeus/${CHANNEL}/${VERSION}`
 
   export async function latest() {
-    return fetch(`https://registry.npmjs.org/opencode-ai/${CHANNEL}`)
+    return fetch(`https://registry.npmjs.org/zeus-ai/${CHANNEL}`)
       .then((res) => {
         if (!res.ok) throw new Error(res.statusText)
         return res.json()

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { $ } from "bun"
 import pkg from "../package.json"
-import { Script } from "@opencode-ai/script"
+import { Script } from "@zeus-ai/script"
 
 const dir = new URL("..", import.meta.url).pathname
 process.chdir(dir)
@@ -9,8 +9,8 @@ process.chdir(dir)
 const { binaries } = await import("./build.ts")
 {
   const name = `${pkg.name}-${process.platform}-${process.arch}`
-  console.log(`smoke test: running dist/${name}/bin/opencode --version`)
-  await $`./dist/${name}/bin/opencode --version`
+  console.log(`smoke test: running dist/${name}/bin/zeus --version`)
+  await $`./dist/${name}/bin/zeus --version`
 }
 
 await $`mkdir -p ./dist/${pkg.name}`
@@ -46,80 +46,80 @@ if (!Script.preview) {
   }
 
   // Calculate SHA values
-  const arm64Sha = await $`sha256sum ./dist/opencode-linux-arm64.zip | cut -d' ' -f1`.text().then((x) => x.trim())
-  const x64Sha = await $`sha256sum ./dist/opencode-linux-x64.zip | cut -d' ' -f1`.text().then((x) => x.trim())
-  const macX64Sha = await $`sha256sum ./dist/opencode-darwin-x64.zip | cut -d' ' -f1`.text().then((x) => x.trim())
-  const macArm64Sha = await $`sha256sum ./dist/opencode-darwin-arm64.zip | cut -d' ' -f1`.text().then((x) => x.trim())
+  const arm64Sha = await $`sha256sum ./dist/zeus-linux-arm64.zip | cut -d' ' -f1`.text().then((x) => x.trim())
+  const x64Sha = await $`sha256sum ./dist/zeus-linux-x64.zip | cut -d' ' -f1`.text().then((x) => x.trim())
+  const macX64Sha = await $`sha256sum ./dist/zeus-darwin-x64.zip | cut -d' ' -f1`.text().then((x) => x.trim())
+  const macArm64Sha = await $`sha256sum ./dist/zeus-darwin-arm64.zip | cut -d' ' -f1`.text().then((x) => x.trim())
 
   // arch
   const binaryPkgbuild = [
     "# Maintainer: dax",
     "# Maintainer: adam",
     "",
-    "pkgname='opencode-bin'",
+    "pkgname='zeus-bin'",
     `pkgver=${Script.version.split("-")[0]}`,
     "options=('!debug' '!strip')",
     "pkgrel=1",
     "pkgdesc='The AI coding agent built for the terminal.'",
-    "url='https://github.com/sst/opencode'",
+    "url='https://github.com/sst/zeus'",
     "arch=('aarch64' 'x86_64')",
     "license=('MIT')",
-    "provides=('opencode')",
-    "conflicts=('opencode')",
+    "provides=('zeus')",
+    "conflicts=('zeus')",
     "depends=('fzf' 'ripgrep')",
     "",
-    `source_aarch64=("\${pkgname}_\${pkgver}_aarch64.zip::https://github.com/sst/opencode/releases/download/v${Script.version}/opencode-linux-arm64.zip")`,
+    `source_aarch64=("\${pkgname}_\${pkgver}_aarch64.zip::https://github.com/sst/zeus/releases/download/v${Script.version}/zeus-linux-arm64.zip")`,
     `sha256sums_aarch64=('${arm64Sha}')`,
     "",
-    `source_x86_64=("\${pkgname}_\${pkgver}_x86_64.zip::https://github.com/sst/opencode/releases/download/v${Script.version}/opencode-linux-x64.zip")`,
+    `source_x86_64=("\${pkgname}_\${pkgver}_x86_64.zip::https://github.com/sst/zeus/releases/download/v${Script.version}/zeus-linux-x64.zip")`,
     `sha256sums_x86_64=('${x64Sha}')`,
     "",
     "package() {",
-    '  install -Dm755 ./opencode "${pkgdir}/usr/bin/opencode"',
+    '  install -Dm755 ./zeus "${pkgdir}/usr/bin/zeus"',
     "}",
     "",
   ].join("\n")
 
-  // Source-based PKGBUILD for opencode
+  // Source-based PKGBUILD for zeus
   const sourcePkgbuild = [
     "# Maintainer: dax",
     "# Maintainer: adam",
     "",
-    "pkgname='opencode'",
+    "pkgname='zeus'",
     `pkgver=${Script.version.split("-")[0]}`,
     "options=('!debug' '!strip')",
     "pkgrel=1",
     "pkgdesc='The AI coding agent built for the terminal.'",
-    "url='https://github.com/sst/opencode'",
+    "url='https://github.com/sst/zeus'",
     "arch=('aarch64' 'x86_64')",
     "license=('MIT')",
-    "provides=('opencode')",
-    "conflicts=('opencode-bin')",
+    "provides=('zeus')",
+    "conflicts=('zeus-bin')",
     "depends=('fzf' 'ripgrep')",
     "makedepends=('git' 'bun-bin' 'go')",
     "",
-    `source=("opencode-\${pkgver}.tar.gz::https://github.com/sst/opencode/archive/v${Script.version}.tar.gz")`,
+    `source=("zeus-\${pkgver}.tar.gz::https://github.com/sst/zeus/archive/v${Script.version}.tar.gz")`,
     `sha256sums=('SKIP')`,
     "",
     "build() {",
-    `  cd "opencode-\${pkgver}"`,
+    `  cd "zeus-\${pkgver}"`,
     `  bun install`,
     "  cd packages/tui",
-    `  CGO_ENABLED=0 go build -ldflags="-s -w -X main.Version=\${pkgver}" -o tui cmd/opencode/main.go`,
-    "  cd ../opencode",
-    `  bun build --define OPENCODE_TUI_PATH="'$(realpath ../tui/tui)'" --define OPENCODE_VERSION="'\${pkgver}'" --compile --target=bun-linux-x64 --outfile=opencode ./src/index.ts`,
+    `  CGO_ENABLED=0 go build -ldflags="-s -w -X main.Version=\${pkgver}" -o tui cmd/zeus/main.go`,
+    "  cd ../zeus",
+    `  bun build --define ZEUS_TUI_PATH="'$(realpath ../tui/tui)'" --define ZEUS_VERSION="'\${pkgver}'" --compile --target=bun-linux-x64 --outfile=zeus ./src/index.ts`,
     "}",
     "",
     "package() {",
-    `  cd "opencode-\${pkgver}/packages/opencode"`,
-    '  install -Dm755 ./opencode "${pkgdir}/usr/bin/opencode"',
+    `  cd "zeus-\${pkgver}/packages/zeus"`,
+    '  install -Dm755 ./zeus "${pkgdir}/usr/bin/zeus"',
     "}",
     "",
   ].join("\n")
 
   for (const [pkg, pkgbuild] of [
-    ["opencode-bin", binaryPkgbuild],
-    ["opencode", sourcePkgbuild],
+    ["zeus-bin", binaryPkgbuild],
+    ["zeus", sourcePkgbuild],
   ]) {
     for (let i = 0; i < 30; i++) {
       try {
@@ -146,41 +146,41 @@ if (!Script.preview) {
     "# This file was generated by GoReleaser. DO NOT EDIT.",
     "class Opencode < Formula",
     `  desc "The AI coding agent built for the terminal."`,
-    `  homepage "https://github.com/sst/opencode"`,
+    `  homepage "https://github.com/sst/zeus"`,
     `  version "${Script.version.split("-")[0]}"`,
     "",
     "  on_macos do",
     "    if Hardware::CPU.intel?",
-    `      url "https://github.com/sst/opencode/releases/download/v${Script.version}/opencode-darwin-x64.zip"`,
+    `      url "https://github.com/sst/zeus/releases/download/v${Script.version}/zeus-darwin-x64.zip"`,
     `      sha256 "${macX64Sha}"`,
     "",
     "      def install",
-    '        bin.install "opencode"',
+    '        bin.install "zeus"',
     "      end",
     "    end",
     "    if Hardware::CPU.arm?",
-    `      url "https://github.com/sst/opencode/releases/download/v${Script.version}/opencode-darwin-arm64.zip"`,
+    `      url "https://github.com/sst/zeus/releases/download/v${Script.version}/zeus-darwin-arm64.zip"`,
     `      sha256 "${macArm64Sha}"`,
     "",
     "      def install",
-    '        bin.install "opencode"',
+    '        bin.install "zeus"',
     "      end",
     "    end",
     "  end",
     "",
     "  on_linux do",
     "    if Hardware::CPU.intel? and Hardware::CPU.is_64_bit?",
-    `      url "https://github.com/sst/opencode/releases/download/v${Script.version}/opencode-linux-x64.zip"`,
+    `      url "https://github.com/sst/zeus/releases/download/v${Script.version}/zeus-linux-x64.zip"`,
     `      sha256 "${x64Sha}"`,
     "      def install",
-    '        bin.install "opencode"',
+    '        bin.install "zeus"',
     "      end",
     "    end",
     "    if Hardware::CPU.arm? and Hardware::CPU.is_64_bit?",
-    `      url "https://github.com/sst/opencode/releases/download/v${Script.version}/opencode-linux-arm64.zip"`,
+    `      url "https://github.com/sst/zeus/releases/download/v${Script.version}/zeus-linux-arm64.zip"`,
     `      sha256 "${arm64Sha}"`,
     "      def install",
-    '        bin.install "opencode"',
+    '        bin.install "zeus"',
     "      end",
     "    end",
     "  end",
@@ -191,8 +191,8 @@ if (!Script.preview) {
 
   await $`rm -rf ./dist/homebrew-tap`
   await $`git clone https://${process.env["GITHUB_TOKEN"]}@github.com/sst/homebrew-tap.git ./dist/homebrew-tap`
-  await Bun.file("./dist/homebrew-tap/opencode.rb").write(homebrewFormula)
-  await $`cd ./dist/homebrew-tap && git add opencode.rb`
+  await Bun.file("./dist/homebrew-tap/zeus.rb").write(homebrewFormula)
+  await $`cd ./dist/homebrew-tap && git add zeus.rb`
   await $`cd ./dist/homebrew-tap && git commit -m "Update to v${Script.version}"`
   await $`cd ./dist/homebrew-tap && git push`
 }

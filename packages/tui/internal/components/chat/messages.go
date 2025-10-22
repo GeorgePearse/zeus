@@ -13,17 +13,17 @@ import (
 	tea "github.com/charmbracelet/bubbletea/v2"
 	"github.com/charmbracelet/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode/internal/app"
-	"github.com/sst/opencode/internal/commands"
-	"github.com/sst/opencode/internal/components/dialog"
-	"github.com/sst/opencode/internal/components/diff"
-	"github.com/sst/opencode/internal/components/toast"
-	"github.com/sst/opencode/internal/layout"
-	"github.com/sst/opencode/internal/styles"
-	"github.com/sst/opencode/internal/theme"
-	"github.com/sst/opencode/internal/util"
-	"github.com/sst/opencode/internal/viewport"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus/internal/app"
+	"github.com/sst/zeus/internal/commands"
+	"github.com/sst/zeus/internal/components/dialog"
+	"github.com/sst/zeus/internal/components/diff"
+	"github.com/sst/zeus/internal/components/toast"
+	"github.com/sst/zeus/internal/layout"
+	"github.com/sst/zeus/internal/styles"
+	"github.com/sst/zeus/internal/theme"
+	"github.com/sst/zeus/internal/util"
+	"github.com/sst/zeus/internal/viewport"
 )
 
 type MessagesComponent interface {
@@ -229,37 +229,37 @@ func (m *messagesComponent) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.renderView()
 		}
 
-	case opencode.EventListResponseEventSessionUpdated:
+	case zeus.EventListResponseEventSessionUpdated:
 		if msg.Properties.Info.ID == m.app.Session.ID {
 			cmds = append(cmds, m.renderView())
 		}
-	case opencode.EventListResponseEventMessageUpdated:
+	case zeus.EventListResponseEventMessageUpdated:
 		if msg.Properties.Info.SessionID == m.app.Session.ID {
 			cmds = append(cmds, m.renderView())
 		}
-	case opencode.EventListResponseEventSessionError:
+	case zeus.EventListResponseEventSessionError:
 		if msg.Properties.SessionID == m.app.Session.ID {
 			cmds = append(cmds, m.renderView())
 		}
-	case opencode.EventListResponseEventMessagePartUpdated:
+	case zeus.EventListResponseEventMessagePartUpdated:
 		if msg.Properties.Part.SessionID == m.app.Session.ID {
 			cmds = append(cmds, m.renderView())
 		}
-	case opencode.EventListResponseEventMessageRemoved:
+	case zeus.EventListResponseEventMessageRemoved:
 		if msg.Properties.SessionID == m.app.Session.ID {
 			m.cache.Clear()
 			cmds = append(cmds, m.renderView())
 		}
-	case opencode.EventListResponseEventMessagePartRemoved:
+	case zeus.EventListResponseEventMessagePartRemoved:
 		if msg.Properties.SessionID == m.app.Session.ID {
 			// Clear the cache when a part is removed to ensure proper re-rendering
 			m.cache.Clear()
 			cmds = append(cmds, m.renderView())
 		}
-	case opencode.EventListResponseEventPermissionUpdated:
+	case zeus.EventListResponseEventPermissionUpdated:
 		m.tail = true
 		return m, m.renderView()
-	case opencode.EventListResponseEventPermissionReplied:
+	case zeus.EventListResponseEventPermissionReplied:
 		m.tail = true
 		return m, m.renderView()
 	case renderCompleteMsg:
@@ -336,7 +336,7 @@ func (m *messagesComponent) renderView() tea.Cmd {
 		lineCount := 0
 		messagePositions := make(map[string]int) // Track message ID to line position
 
-		orphanedToolCalls := make([]opencode.ToolPart, 0)
+		orphanedToolCalls := make([]zeus.ToolPart, 0)
 
 		width := m.width // always use full width
 
@@ -344,12 +344,12 @@ func (m *messagesComponent) renderView() tea.Cmd {
 		lastStreamingReasoningID := ""
 		if m.showThinkingBlocks {
 			for mi := len(m.app.Messages) - 1; mi >= 0 && lastStreamingReasoningID == ""; mi-- {
-				if _, ok := m.app.Messages[mi].Info.(opencode.AssistantMessage); !ok {
+				if _, ok := m.app.Messages[mi].Info.(zeus.AssistantMessage); !ok {
 					continue
 				}
 				parts := m.app.Messages[mi].Parts
 				for pi := len(parts) - 1; pi >= 0; pi-- {
-					if rp, ok := parts[pi].(opencode.ReasoningPart); ok {
+					if rp, ok := parts[pi].(zeus.ReasoningPart); ok {
 						if strings.TrimSpace(rp.Text) != "" && rp.Time.End == 0 {
 							lastStreamingReasoningID = rp.ID
 							break
@@ -364,7 +364,7 @@ func (m *messagesComponent) renderView() tea.Cmd {
 		revertedToolCount := 0
 		lastAssistantMessage := "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
 		for _, msg := range slices.Backward(m.app.Messages) {
-			if assistant, ok := msg.Info.(opencode.AssistantMessage); ok {
+			if assistant, ok := msg.Info.(zeus.AssistantMessage); ok {
 				if assistant.Time.Completed > 0 {
 					break
 				}
@@ -378,7 +378,7 @@ func (m *messagesComponent) renderView() tea.Cmd {
 			error := ""
 
 			switch casted := message.Info.(type) {
-			case opencode.UserMessage:
+			case zeus.UserMessage:
 				// Track the position of this user message
 				messagePositions[casted.ID] = lineCount
 
@@ -395,7 +395,7 @@ func (m *messagesComponent) renderView() tea.Cmd {
 
 				for partIndex, part := range message.Parts {
 					switch part := part.(type) {
-					case opencode.TextPart:
+					case zeus.TextPart:
 						if part.Synthetic {
 							continue
 						}
@@ -403,15 +403,15 @@ func (m *messagesComponent) renderView() tea.Cmd {
 							continue
 						}
 						remainingParts := message.Parts[partIndex+1:]
-						fileParts := make([]opencode.FilePart, 0)
-						agentParts := make([]opencode.AgentPart, 0)
+						fileParts := make([]zeus.FilePart, 0)
+						agentParts := make([]zeus.AgentPart, 0)
 						for _, part := range remainingParts {
 							switch part := part.(type) {
-							case opencode.FilePart:
+							case zeus.FilePart:
 								if part.Source.Text.Start >= 0 && part.Source.Text.End >= part.Source.Text.Start {
 									fileParts = append(fileParts, part)
 								}
-							case opencode.AgentPart:
+							case zeus.AgentPart:
 								if part.Source.Start >= 0 && part.Source.End >= part.Source.Start {
 									agentParts = append(agentParts, part)
 								}
@@ -477,7 +477,7 @@ func (m *messagesComponent) renderView() tea.Cmd {
 					}
 				}
 
-			case opencode.AssistantMessage:
+			case zeus.AssistantMessage:
 				if casted.ID == m.app.Session.Revert.MessageID {
 					reverted = true
 					revertedMessageCount = 1
@@ -487,7 +487,7 @@ func (m *messagesComponent) renderView() tea.Cmd {
 				hasContent := false
 				for partIndex, p := range message.Parts {
 					switch part := p.(type) {
-					case opencode.TextPart:
+					case zeus.TextPart:
 						if reverted {
 							continue
 						}
@@ -497,13 +497,13 @@ func (m *messagesComponent) renderView() tea.Cmd {
 						hasTextPart = true
 						finished := part.Time.End > 0
 						remainingParts := message.Parts[partIndex+1:]
-						toolCallParts := make([]opencode.ToolPart, 0)
+						toolCallParts := make([]zeus.ToolPart, 0)
 
 						// sometimes tool calls happen without an assistant message
 						// these should be included in this assistant message as well
 						if len(orphanedToolCalls) > 0 {
 							toolCallParts = append(toolCallParts, orphanedToolCalls...)
-							orphanedToolCalls = make([]opencode.ToolPart, 0)
+							orphanedToolCalls = make([]zeus.ToolPart, 0)
 						}
 
 						remaining := true
@@ -512,13 +512,13 @@ func (m *messagesComponent) renderView() tea.Cmd {
 								break
 							}
 							switch part := part.(type) {
-							case opencode.TextPart:
+							case zeus.TextPart:
 								// we only want tool calls associated with the current text part.
 								// if we hit another text part, we're done.
 								remaining = false
-							case opencode.ToolPart:
+							case zeus.ToolPart:
 								toolCallParts = append(toolCallParts, part)
-								if part.State.Status != opencode.ToolPartStateStatusCompleted && part.State.Status != opencode.ToolPartStateStatusError {
+								if part.State.Status != zeus.ToolPartStateStatusCompleted && part.State.Status != zeus.ToolPartStateStatusError {
 									// i don't think there's a case where a tool call isn't in result state
 									// and the message time is 0, but just in case
 									finished = false
@@ -541,8 +541,8 @@ func (m *messagesComponent) renderView() tea.Cmd {
 									false,
 									false,
 									false,
-									[]opencode.FilePart{},
-									[]opencode.AgentPart{},
+									[]zeus.FilePart{},
+									[]zeus.AgentPart{},
 									toolCallParts...,
 								)
 								m.cache.Set(key, content)
@@ -559,8 +559,8 @@ func (m *messagesComponent) renderView() tea.Cmd {
 								false,
 								false,
 								false,
-								[]opencode.FilePart{},
-								[]opencode.AgentPart{},
+								[]zeus.FilePart{},
+								[]zeus.AgentPart{},
 								toolCallParts...,
 							)
 						}
@@ -570,13 +570,13 @@ func (m *messagesComponent) renderView() tea.Cmd {
 							blocks = append(blocks, content)
 							hasContent = true
 						}
-					case opencode.ToolPart:
+					case zeus.ToolPart:
 						if reverted {
 							revertedToolCount++
 							continue
 						}
 
-						permission := opencode.Permission{}
+						permission := zeus.Permission{}
 						if m.app.CurrentPermission.CallID == part.CallID {
 							permission = m.app.CurrentPermission
 						}
@@ -588,7 +588,7 @@ func (m *messagesComponent) renderView() tea.Cmd {
 							continue
 						}
 
-						if part.State.Status == opencode.ToolPartStateStatusCompleted || part.State.Status == opencode.ToolPartStateStatusError {
+						if part.State.Status == zeus.ToolPartStateStatusCompleted || part.State.Status == zeus.ToolPartStateStatusError {
 							key := m.cache.GenerateKey(casted.ID,
 								part.ID,
 								m.showToolDetails,
@@ -620,7 +620,7 @@ func (m *messagesComponent) renderView() tea.Cmd {
 							blocks = append(blocks, content)
 							hasContent = true
 						}
-					case opencode.ReasoningPart:
+					case zeus.ReasoningPart:
 						if reverted {
 							continue
 						}
@@ -641,8 +641,8 @@ func (m *messagesComponent) renderView() tea.Cmd {
 								true,
 								false,
 								shimmer,
-								[]opencode.FilePart{},
-								[]opencode.AgentPart{},
+								[]zeus.FilePart{},
+								[]zeus.AgentPart{},
 							)
 							partCount++
 							lineCount += lipgloss.Height(content) + 1
@@ -654,13 +654,13 @@ func (m *messagesComponent) renderView() tea.Cmd {
 
 				switch err := casted.Error.AsUnion().(type) {
 				case nil:
-				case opencode.AssistantMessageErrorMessageOutputLengthError:
+				case zeus.AssistantMessageErrorMessageOutputLengthError:
 					error = "Message output length exceeded"
-				case opencode.ProviderAuthError:
+				case zeus.ProviderAuthError:
 					error = err.Data.Message
-				case opencode.MessageAbortedError:
+				case zeus.MessageAbortedError:
 					error = "Request was aborted"
-				case opencode.UnknownError:
+				case zeus.UnknownError:
 					error = err.Data.Message
 				}
 
@@ -676,8 +676,8 @@ func (m *messagesComponent) renderView() tea.Cmd {
 						false,
 						false,
 						false,
-						[]opencode.FilePart{},
-						[]opencode.AgentPart{},
+						[]zeus.FilePart{},
+						[]zeus.AgentPart{},
 					)
 					partCount++
 					lineCount += lipgloss.Height(content) + 1
@@ -772,14 +772,14 @@ func (m *messagesComponent) renderView() tea.Cmd {
 				context.Background(),
 				m.app.CurrentPermission.SessionID,
 				m.app.CurrentPermission.MessageID,
-				opencode.SessionMessageParams{},
+				zeus.SessionMessageParams{},
 			)
 			if err != nil || response == nil {
 				slog.Error("Failed to get message from child session", "error", err)
 			} else {
 				for _, part := range response.Parts {
 					if part.CallID == m.app.CurrentPermission.CallID {
-						if toolPart, ok := part.AsUnion().(opencode.ToolPart); ok {
+						if toolPart, ok := part.AsUnion().(zeus.ToolPart); ok {
 							content := renderToolDetails(
 								m.app,
 								toolPart,
@@ -886,7 +886,7 @@ func (m *messagesComponent) renderHeader() string {
 	contextWindow := m.app.Model.Limit.Context
 
 	for _, message := range m.app.Messages {
-		if assistant, ok := message.Info.(opencode.AssistantMessage); ok {
+		if assistant, ok := message.Info.(zeus.AssistantMessage); ok {
 			cost += assistant.Cost
 			usage := assistant.Tokens
 			if usage.Output > 0 {
@@ -913,7 +913,7 @@ func (m *messagesComponent) renderHeader() string {
 		Background(bgColor).
 		Render(sessionInfoText)
 
-	shareEnabled := m.app.Config.Share != opencode.ConfigShareDisabled
+	shareEnabled := m.app.Config.Share != zeus.ConfigShareDisabled
 
 	navHint := ""
 	if isChildSession {
@@ -1103,9 +1103,9 @@ func (m *messagesComponent) CopyLastMessage() (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 	lastMessage := m.app.Messages[len(m.app.Messages)-1]
-	var lastTextPart *opencode.TextPart
+	var lastTextPart *zeus.TextPart
 	for _, part := range lastMessage.Parts {
-		if p, ok := part.(opencode.TextPart); ok {
+		if p, ok := part.(zeus.TextPart); ok {
 			lastTextPart = &p
 		}
 	}
@@ -1125,11 +1125,11 @@ func (m *messagesComponent) UndoLastMessage() (tea.Model, tea.Cmd) {
 	for i := len(m.app.Messages) - 1; i >= 0; i-- {
 		reversedMessages = append(reversedMessages, m.app.Messages[i])
 		switch casted := m.app.Messages[i].Info.(type) {
-		case opencode.UserMessage:
+		case zeus.UserMessage:
 			if casted.ID == m.app.Session.Revert.MessageID {
 				after = casted.Time.Created
 			}
-		case opencode.AssistantMessage:
+		case zeus.AssistantMessage:
 			if casted.ID == m.app.Session.Revert.MessageID {
 				after = casted.Time.Created
 			}
@@ -1137,11 +1137,11 @@ func (m *messagesComponent) UndoLastMessage() (tea.Model, tea.Cmd) {
 		if m.app.Session.Revert.PartID != "" {
 			for _, part := range m.app.Messages[i].Parts {
 				switch casted := part.(type) {
-				case opencode.TextPart:
+				case zeus.TextPart:
 					if casted.ID == m.app.Session.Revert.PartID {
 						after = casted.Time.Start
 					}
-				case opencode.ToolPart:
+				case zeus.ToolPart:
 					// TODO: handle tool parts
 				}
 			}
@@ -1151,7 +1151,7 @@ func (m *messagesComponent) UndoLastMessage() (tea.Model, tea.Cmd) {
 	messageID := ""
 	for _, msg := range reversedMessages {
 		switch casted := msg.Info.(type) {
-		case opencode.UserMessage:
+		case zeus.UserMessage:
 			if after > 0 && casted.Time.Created >= after {
 				continue
 			}
@@ -1171,8 +1171,8 @@ func (m *messagesComponent) UndoLastMessage() (tea.Model, tea.Cmd) {
 		response, err := m.app.Client.Session.Revert(
 			context.Background(),
 			m.app.Session.ID,
-			opencode.SessionRevertParams{
-				MessageID: opencode.F(messageID),
+			zeus.SessionRevertParams{
+				MessageID: zeus.F(messageID),
 			},
 		)
 		if err != nil {
@@ -1198,11 +1198,11 @@ func (m *messagesComponent) RedoLastMessage() (tea.Model, tea.Cmd) {
 	var revertedMessage app.Message
 	for _, message := range m.app.Messages {
 		switch casted := message.Info.(type) {
-		case opencode.UserMessage:
+		case zeus.UserMessage:
 			if casted.ID == m.app.Session.Revert.MessageID {
 				before = casted.Time.Created
 			}
-		case opencode.AssistantMessage:
+		case zeus.AssistantMessage:
 			if casted.ID == m.app.Session.Revert.MessageID {
 				before = casted.Time.Created
 			}
@@ -1210,11 +1210,11 @@ func (m *messagesComponent) RedoLastMessage() (tea.Model, tea.Cmd) {
 		if m.app.Session.Revert.PartID != "" {
 			for _, part := range message.Parts {
 				switch casted := part.(type) {
-				case opencode.TextPart:
+				case zeus.TextPart:
 					if casted.ID == m.app.Session.Revert.PartID {
 						before = casted.Time.Start
 					}
-				case opencode.ToolPart:
+				case zeus.ToolPart:
 					// TODO: handle tool parts
 				}
 			}
@@ -1224,7 +1224,7 @@ func (m *messagesComponent) RedoLastMessage() (tea.Model, tea.Cmd) {
 	messageID := ""
 	for _, msg := range m.app.Messages {
 		switch casted := msg.Info.(type) {
-		case opencode.UserMessage:
+		case zeus.UserMessage:
 			if casted.Time.Created <= before {
 				continue
 			}
@@ -1242,7 +1242,7 @@ func (m *messagesComponent) RedoLastMessage() (tea.Model, tea.Cmd) {
 			response, err := m.app.Client.Session.Unrevert(
 				context.Background(),
 				m.app.Session.ID,
-				opencode.SessionUnrevertParams{},
+				zeus.SessionUnrevertParams{},
 			)
 			if err != nil {
 				slog.Error("Failed to unrevert session", "error", err)
@@ -1260,8 +1260,8 @@ func (m *messagesComponent) RedoLastMessage() (tea.Model, tea.Cmd) {
 		response, err := m.app.Client.Session.Revert(
 			context.Background(),
 			m.app.Session.ID,
-			opencode.SessionRevertParams{
-				MessageID: opencode.F(messageID),
+			zeus.SessionRevertParams{
+				MessageID: zeus.F(messageID),
 			},
 		)
 		if err != nil {

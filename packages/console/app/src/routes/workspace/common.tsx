@@ -1,8 +1,8 @@
-import { Resource } from "@opencode-ai/console-resource"
-import { Actor } from "@opencode-ai/console-core/actor.js"
+import { Resource } from "@zeus-ai/console-resource"
+import { Actor } from "@zeus-ai/console-core/actor.js"
 import { action, query } from "@solidjs/router"
 import { withActor } from "~/context/auth.withActor"
-import { Billing } from "@opencode-ai/console-core/billing.js"
+import { Billing } from "@zeus-ai/console-core/billing.js"
 
 export function formatDateForTable(date: Date) {
   const options: Intl.DateTimeFormatOptions = {

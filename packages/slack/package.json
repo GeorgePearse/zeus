@@ -1,5 +1,5 @@
 {
-  "name": "@opencode-ai/slack",
+  "name": "@zeus-ai/slack",
   "version": "0.15.3",
   "type": "module",
   "scripts": {
@@ -7,7 +7,7 @@
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
-    "@opencode-ai/sdk": "workspace:*",
+    "@zeus-ai/sdk": "workspace:*",
     "@slack/bolt": "^3.17.1"
   },
   "devDependencies": {

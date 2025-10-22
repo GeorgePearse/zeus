@@ -1,5 +1,5 @@
 {
-  "project": "opencode",
+  "project": "zeus",
   "openapi_spec": "openapi.json",
   "stainless_config": "stainless.yml"
 }

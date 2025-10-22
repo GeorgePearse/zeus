@@ -255,10 +255,10 @@ export namespace SessionPrompt {
           }
         },
         headers:
-          model.providerID === "opencode"
+          model.providerID === "zeus"
             ? {
-                "x-opencode-session": input.sessionID,
-                "x-opencode-request": userMsg.info.id,
+                "x-zeus-session": input.sessionID,
+                "x-zeus-request": userMsg.info.id,
               }
             : undefined,
         maxRetries: 10,

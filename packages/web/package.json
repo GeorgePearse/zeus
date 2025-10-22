@@ -1,10 +1,10 @@
 {
-  "name": "@opencode-ai/web",
+  "name": "@zeus-ai/web",
   "type": "module",
   "version": "0.15.3",
   "scripts": {
     "dev": "astro dev",
-    "dev:remote": "VITE_API_URL=https://api.opencode.ai astro dev",
+    "dev:remote": "VITE_API_URL=https://api.zeus.ai astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
@@ -34,7 +34,7 @@
     "toolbeam-docs-theme": "0.4.8"
   },
   "devDependencies": {
-    "opencode": "workspace:*",
+    "zeus": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:"
   }

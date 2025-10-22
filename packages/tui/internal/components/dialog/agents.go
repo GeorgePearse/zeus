@@ -7,14 +7,14 @@ import (
 	"github.com/charmbracelet/bubbles/v2/key"
 	tea "github.com/charmbracelet/bubbletea/v2"
 	"github.com/lithammer/fuzzysearch/fuzzy"
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode/internal/app"
-	"github.com/sst/opencode/internal/components/list"
-	"github.com/sst/opencode/internal/components/modal"
-	"github.com/sst/opencode/internal/layout"
-	"github.com/sst/opencode/internal/styles"
-	"github.com/sst/opencode/internal/theme"
-	"github.com/sst/opencode/internal/util"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus/internal/app"
+	"github.com/sst/zeus/internal/components/list"
+	"github.com/sst/zeus/internal/components/modal"
+	"github.com/sst/zeus/internal/layout"
+	"github.com/sst/zeus/internal/styles"
+	"github.com/sst/zeus/internal/theme"
+	"github.com/sst/zeus/internal/util"
 )
 
 const (
@@ -48,7 +48,7 @@ type agentSelectItem struct {
 	mode        string // "primary", "subagent", "all"
 	isCurrent   bool
 	agentIndex  int
-	agent       opencode.Agent // Keep original agent for compatibility
+	agent       zeus.Agent // Keep original agent for compatibility
 }
 
 func (a agentSelectItem) Render(

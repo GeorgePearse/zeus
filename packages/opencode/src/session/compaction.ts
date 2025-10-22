@@ -27,7 +27,7 @@ export namespace SessionCompaction {
   }
 
   export function isOverflow(input: { tokens: MessageV2.Assistant["tokens"]; model: ModelsDev.Model }) {
-    if (Flag.OPENCODE_DISABLE_AUTOCOMPACT) return false
+    if (Flag.ZEUS_DISABLE_AUTOCOMPACT) return false
     const context = input.model.limit.context
     if (context === 0) return false
     const count = input.tokens.input + input.tokens.cache.read + input.tokens.output
@@ -43,7 +43,7 @@ export namespace SessionCompaction {
   // calls. then erases output of previous tool calls. idea is to throw away old
   // tool calls that are no longer relevant.
   export async function prune(input: { sessionID: string }) {
-    if (Flag.OPENCODE_DISABLE_PRUNE) return
+    if (Flag.ZEUS_DISABLE_PRUNE) return
     log.info("pruning")
     const msgs = await Session.messages(input.sessionID)
     let total = 0

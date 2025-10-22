@@ -70,7 +70,7 @@ export const AuthLoginCommand = cmd({
   describe: "log in to a provider",
   builder: (yargs) =>
     yargs.positional("url", {
-      describe: "opencode auth provider",
+      describe: "zeus auth provider",
       type: "string",
     }),
   async handler(args) {
@@ -80,7 +80,7 @@ export const AuthLoginCommand = cmd({
         UI.empty()
         prompts.intro("Add credential")
         if (args.url) {
-          const wellknown = await fetch(`${args.url}/.well-known/opencode`).then((x) => x.json())
+          const wellknown = await fetch(`${args.url}/.well-known/zeus`).then((x) => x.json())
           prompts.log.info(`Running \`${wellknown.auth.command.join(" ")}\``)
           const proc = Bun.spawn({
             cmd: wellknown.auth.command,
@@ -105,7 +105,7 @@ export const AuthLoginCommand = cmd({
         await ModelsDev.refresh().catch(() => {})
         const providers = await ModelsDev.get()
         const priority: Record<string, number> = {
-          opencode: 0,
+          zeus: 0,
           anthropic: 1,
           "github-copilot": 2,
           openai: 3,
@@ -235,7 +235,7 @@ export const AuthLoginCommand = cmd({
           provider = provider.replace(/^@ai-sdk\//, "")
           if (prompts.isCancel(provider)) throw new UI.CancelledError()
           prompts.log.warn(
-            `This only stores a credential for ${provider} - you will need configure it in opencode.json, check the docs for examples.`,
+            `This only stores a credential for ${provider} - you will need configure it in zeus.json, check the docs for examples.`,
           )
         }
 
@@ -255,8 +255,8 @@ export const AuthLoginCommand = cmd({
           return
         }
 
-        if (provider === "opencode") {
-          prompts.log.info("Create an api key at https://opencode.ai/auth")
+        if (provider === "zeus") {
+          prompts.log.info("Create an api key at https://zeus.ai/auth")
         }
 
         if (provider === "vercel") {

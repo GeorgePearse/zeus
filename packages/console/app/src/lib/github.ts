@@ -8,9 +8,9 @@ export const github = query(async () => {
   }
   try {
     const [meta, releases, contributors] = await Promise.all([
-      fetch("https://api.github.com/repos/sst/opencode", { headers }).then((res) => res.json()),
-      fetch("https://api.github.com/repos/sst/opencode/releases", { headers }).then((res) => res.json()),
-      fetch("https://api.github.com/repos/sst/opencode/contributors?per_page=1", { headers }),
+      fetch("https://api.github.com/repos/sst/zeus", { headers }).then((res) => res.json()),
+      fetch("https://api.github.com/repos/sst/zeus/releases", { headers }).then((res) => res.json()),
+      fetch("https://api.github.com/repos/sst/zeus/contributors?per_page=1", { headers }),
     ])
     const [release] = releases
     const contributorCount = Number.parseInt(

@@ -5,10 +5,10 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/sst/opencode-sdk-go"
-	"github.com/sst/opencode/internal/app"
-	"github.com/sst/opencode/internal/styles"
-	"github.com/sst/opencode/internal/theme"
+	"github.com/sst/zeus-sdk-go"
+	"github.com/sst/zeus/internal/app"
+	"github.com/sst/zeus/internal/styles"
+	"github.com/sst/zeus/internal/theme"
 )
 
 type agentsContextGroup struct {
@@ -32,7 +32,7 @@ func (cg *agentsContextGroup) GetChildEntries(
 
 	agents, err := cg.app.Client.Agent.List(
 		context.Background(),
-		opencode.AgentListParams{},
+		zeus.AgentListParams{},
 	)
 	if err != nil {
 		slog.Error("Failed to get agent list", "error", err)
@@ -46,7 +46,7 @@ func (cg *agentsContextGroup) GetChildEntries(
 		if query != "" && !strings.Contains(strings.ToLower(agent.Name), strings.ToLower(query)) {
 			continue
 		}
-		if agent.Mode == opencode.AgentModePrimary {
+		if agent.Mode == zeus.AgentModePrimary {
 			continue
 		}
 

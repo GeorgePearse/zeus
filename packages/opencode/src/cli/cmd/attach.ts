@@ -8,7 +8,7 @@ import { $ } from "bun"
 
 export const AttachCommand = cmd({
   command: "attach <server>",
-  describe: "attach to a running opencode server",
+  describe: "attach to a running zeus server",
   builder: (yargs) =>
     yargs
       .positional("server", {
@@ -37,7 +37,7 @@ export const AttachCommand = cmd({
       cmd = [binary]
     }
     if (!tui) {
-      const dir = Bun.fileURLToPath(new URL("../../../../tui/cmd/opencode", import.meta.url))
+      const dir = Bun.fileURLToPath(new URL("../../../../tui/cmd/zeus", import.meta.url))
       let binaryName = `./dist/tui${process.platform === "win32" ? ".exe" : ""}`
       await $`go build -o ${binaryName} ./main.go`.cwd(dir)
       cmd = [path.join(dir, binaryName)]
@@ -56,7 +56,7 @@ export const AttachCommand = cmd({
       env: {
         ...process.env,
         CGO_ENABLED: "0",
-        OPENCODE_SERVER: args.server,
+        ZEUS_SERVER: args.server,
       },
     })
 

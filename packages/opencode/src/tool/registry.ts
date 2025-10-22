@@ -16,7 +16,7 @@ import { Tool } from "./tool"
 import { Instance } from "../project/instance"
 import { Config } from "../config/config"
 import path from "path"
-import { type ToolDefinition } from "@opencode-ai/plugin"
+import { type ToolDefinition } from "@zeus-ai/plugin"
 import z from "zod/v4"
 import { Plugin } from "../plugin"
 

@@ -4,13 +4,13 @@ import { BillingTable, PaymentTable, UsageTable } from "./schema/billing.sql"
 import { Actor } from "./actor"
 import { fn } from "./util/fn"
 import { z } from "zod"
-import { Resource } from "@opencode-ai/console-resource"
+import { Resource } from "@zeus-ai/console-resource"
 import { Identifier } from "./identifier"
 import { centsToMicroCents } from "./util/price"
 import { User } from "./user"
 
 export namespace Billing {
-  export const CHARGE_NAME = "opencode credits"
+  export const CHARGE_NAME = "zeus credits"
   export const CHARGE_FEE_NAME = "processing fee"
   export const CHARGE_AMOUNT = 2000 // $20
   export const CHARGE_FEE = 123 // Stripe fee 4.4% + $0.30

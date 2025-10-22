@@ -25,7 +25,7 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 render(
   () => (
     <div class="h-full bg-background text-text-muted">
-      <ThemeProvider defaultTheme="opencode" defaultDarkMode={true}>
+      <ThemeProvider defaultTheme="zeus" defaultDarkMode={true}>
         <ShikiProvider>
           <MarkedProvider>
             <SDKProvider>

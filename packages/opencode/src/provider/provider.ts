@@ -74,7 +74,7 @@ export namespace Provider {
         },
       }
     },
-    async opencode(input) {
+    async zeus(input) {
       const hasKey = await (async () => {
         if (input.env.some((item) => process.env[item])) return true
         if (await Auth.get(input.id)) return true
@@ -210,8 +210,8 @@ export namespace Provider {
         autoload: false,
         options: {
           headers: {
-            "HTTP-Referer": "https://opencode.ai/",
-            "X-Title": "opencode",
+            "HTTP-Referer": "https://zeus.ai/",
+            "X-Title": "zeus",
           },
         },
       }
@@ -221,8 +221,8 @@ export namespace Provider {
         autoload: false,
         options: {
           headers: {
-            "http-referer": "https://opencode.ai/",
-            "x-title": "opencode",
+            "http-referer": "https://zeus.ai/",
+            "x-title": "zeus",
           },
         },
       }
@@ -448,7 +448,7 @@ export namespace Provider {
           // Filter out experimental models
           .filter(
             ([, model]) =>
-              (!model.experimental && model.status !== "alpha") || Flag.OPENCODE_ENABLE_EXPERIMENTAL_MODELS,
+              (!model.experimental && model.status !== "alpha") || Flag.ZEUS_ENABLE_EXPERIMENTAL_MODELS,
           ),
       )
       provider.info.models = filteredModels

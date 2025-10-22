@@ -1,19 +1,19 @@
 import { z } from "zod"
 import type { APIEvent } from "@solidjs/start/server"
 import path from "node:path"
-import { and, Database, eq, isNull, lt, or, sql } from "@opencode-ai/console-core/drizzle/index.js"
-import { KeyTable } from "@opencode-ai/console-core/schema/key.sql.js"
-import { BillingTable, UsageTable } from "@opencode-ai/console-core/schema/billing.sql.js"
-import { centsToMicroCents } from "@opencode-ai/console-core/util/price.js"
-import { Identifier } from "@opencode-ai/console-core/identifier.js"
-import { Resource } from "@opencode-ai/console-resource"
+import { and, Database, eq, isNull, lt, or, sql } from "@zeus-ai/console-core/drizzle/index.js"
+import { KeyTable } from "@zeus-ai/console-core/schema/key.sql.js"
+import { BillingTable, UsageTable } from "@zeus-ai/console-core/schema/billing.sql.js"
+import { centsToMicroCents } from "@zeus-ai/console-core/util/price.js"
+import { Identifier } from "@zeus-ai/console-core/identifier.js"
+import { Resource } from "@zeus-ai/console-resource"
 import { Billing } from "../../../../core/src/billing"
-import { Actor } from "@opencode-ai/console-core/actor.js"
-import { WorkspaceTable } from "@opencode-ai/console-core/schema/workspace.sql.js"
-import { ZenModel } from "@opencode-ai/console-core/model.js"
-import { UserTable } from "@opencode-ai/console-core/schema/user.sql.js"
-import { ModelTable } from "@opencode-ai/console-core/schema/model.sql.js"
-import { ProviderTable } from "@opencode-ai/console-core/schema/provider.sql.js"
+import { Actor } from "@zeus-ai/console-core/actor.js"
+import { WorkspaceTable } from "@zeus-ai/console-core/schema/workspace.sql.js"
+import { ZenModel } from "@zeus-ai/console-core/model.js"
+import { UserTable } from "@zeus-ai/console-core/schema/user.sql.js"
+import { ModelTable } from "@zeus-ai/console-core/schema/model.sql.js"
+import { ProviderTable } from "@zeus-ai/console-core/schema/provider.sql.js"
 
 export async function handler(
   input: APIEvent,
@@ -43,7 +43,7 @@ export async function handler(
 
   const FREE_WORKSPACES = [
     "wrk_01K46JDFR0E75SG2Q8K172KF3Y", // frank
-    "wrk_01K6W1A3VE0KMNVSCQT43BG2SX", // opencode bench
+    "wrk_01K6W1A3VE0KMNVSCQT43BG2SX", // zeus bench
   ]
 
   const logger = {
@@ -63,8 +63,8 @@ export async function handler(
     logger.debug(JSON.stringify(body))
     logger.metric({
       is_tream: !!body.stream,
-      session: input.request.headers.get("x-opencode-session"),
-      request: input.request.headers.get("x-opencode-request"),
+      session: input.request.headers.get("x-zeus-session"),
+      request: input.request.headers.get("x-zeus-request"),
     })
     const modelInfo = validateModel(body.model)
     const providerInfo = selectProvider(modelInfo)

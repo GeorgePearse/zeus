@@ -11,15 +11,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sst/opencode-sdk-go/internal/requestconfig"
+	"github.com/sst/zeus-sdk-go/internal/requestconfig"
 	"github.com/tidwall/sjson"
 )
 
-// RequestOption is an option for the requests made by the opencode API Client
+// RequestOption is an option for the requests made by the zeus API Client
 // which can be supplied to clients, services, and methods. You can read more about this functional
 // options pattern in our [README].
 //
-// [README]: https://pkg.go.dev/github.com/sst/opencode-sdk-go#readme-requestoptions
+// [README]: https://pkg.go.dev/github.com/sst/zeus-sdk-go#readme-requestoptions
 type RequestOption = requestconfig.RequestOption
 
 // WithBaseURL returns a RequestOption that sets the BaseURL for the client.
