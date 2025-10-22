@@ -63,7 +63,7 @@ export namespace TaskQueue {
   /**
    * Start the task queue workers
    */
-  export async function start(config?: Partial<typeof state>["config"]) {
+  export async function start(config?: Partial<ReturnType<typeof state>["config"]>) {
     if (state().running) {
       log.info("task queue already running")
       return

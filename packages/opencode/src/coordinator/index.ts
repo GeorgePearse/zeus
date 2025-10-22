@@ -5,6 +5,8 @@
  * Provides session pooling, task distribution, and result aggregation.
  */
 
+import { CoordinatorTypes } from "./types"
+
 export { SessionPool } from "./session-pool"
 export { AggregationActor } from "./aggregation-actor"
 export { TaskQueue } from "./task-queue"
@@ -23,6 +25,9 @@ export async function initializeCoordinator(config?: {
     maxQueueSize?: number
     maxConcurrency?: number
     maxRetries?: number
+    retryBackoffMs?: number
+    taskTimeoutMs?: number
+    enablePersistence?: boolean
   }
   rateLimiters?: Array<{
     name: string
